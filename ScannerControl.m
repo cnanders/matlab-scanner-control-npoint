@@ -109,7 +109,7 @@ classdef ScannerControl < HandlePlus
     
     properties (Access = private)
         
-          
+        cPortNPoint = 'COM3';
                 
         % {char 1xm} full path to the dir this file is in
         cDirThis
@@ -123,9 +123,7 @@ classdef ScannerControl < HandlePlus
         cDevice = 'test'       % Name of nPoint device 'm142' (field), 'm143' (pupil)
         
         dYOffset = 360;
-       
-        cl      % clock
-        
+               
         lConnected = false;
         hFigure
         hWaveformPanel
@@ -584,7 +582,7 @@ classdef ScannerControl < HandlePlus
             % https://github.com/cnanders/matlab-npoint-lc400
             
             % this.np = nPoint(this.cl, this.cDevice);
-            this.np = npoint.lc400.LC400();
+            this.np = npoint.lc400.LC400('cPort', this.cPortNPoint);
             this.np.init();
             this.np.connect();
             

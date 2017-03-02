@@ -1,13 +1,20 @@
 [cDirThis, cName, cExt] = fileparts(mfilename('fullpath'));
 
-% Add npoint package
-addpath(fullfile(cDirThis, 'pkgs', 'matlab-npoint-lc400'));
+addpath(genpath(cDirThis));
 
-% Add mic lib (for purge)
-addpath(genpath(fullfile(cDirThis, 'libs', 'mic')));
+% Dir of application
+cDirApp = fullfile(cDirThis, '..');
+
+% Add github/cnanders/matlab-npoint-lc400 and its dependencies
+addpath(fullfile(cDirApp, 'vendor', 'github', 'cnanders', 'matlab-npoint-lc400', 'pkg'));
+addpath(fullfile(cDirApp, 'vendor', 'github', 'cnanders', 'matlab-hex', 'pkg'));
+addpath(fullfile(cDirApp, 'vendor', 'github', 'cnanders', 'matlab-ieee', 'pkg'));
+
+% Add github/cnanders/mic lib 
+addpath(genpath(fullfile(cDirApp, 'libs', 'mic')));
 
 % Add functions
-addpath(genpath(fullfile(cDirThis, 'functions')));
+addpath(genpath(fullfile(cDirApp, 'functions')));
 
 % Known bug in MATLAB that you cannot add a class to a path and then import
 % it later in th same script.  Wrapping the import with eval() works.
