@@ -175,14 +175,7 @@ classdef ScannerControl < HandlePlus
     methods
         
         function this = ScannerControl(varargin)
-        %PUPILFILL Class constructor
-        %   pf = PupilFill('name', clock)
-        %
-        % See also INIT, BUILD, DELETE
-           
-            
-            
-            
+          
             [this.cDirThis, cName, cExt] = fileparts(mfilename('fullpath'));
             
             this.cDirApp = this.cDirThis;
