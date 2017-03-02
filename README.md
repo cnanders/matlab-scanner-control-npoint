@@ -38,8 +38,8 @@ sc.build();
 		- github
 			- cnanders
                 - matlab-scanner-control-npoint **(this repo)**
-                - mic **(dependency of this)**
-                - matlab-npoint-lc400 **(dependency of this)**	
+                - mic **(direct dependency)**
+                - matlab-npoint-lc400 **(direct dependency)**	
 				- matlab-ieee **(dependency of matlab-npoint-lc400)**
 				- matlab-hex **(dependency of matlab-ieee)**
 	- file1.m
