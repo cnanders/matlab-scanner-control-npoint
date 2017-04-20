@@ -1607,11 +1607,6 @@ classdef ScannerCore
             st.dY = y*2;
             st.dT = t;
             
-            
-            
-            
-            
-            
         end
         
         function [st] = getSaw( ...

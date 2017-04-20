@@ -144,6 +144,13 @@ classdef ScannerControl < HandlePlus
         hPreviewAxis2DSim
         hPreviewAxis1D
         
+        hLinesVxSensor1D
+        hLinesVySensor1D
+        hLinesVxCommand1D
+        hLinesVyCommand1D
+        
+        hLinesSensorVxVsVy
+        hLinesCommandVxVsVy
         
         hMonitorAxis2D
         hMonitorAxis2DSim
@@ -486,9 +493,9 @@ classdef ScannerControl < HandlePlus
             this.uieFilterHz.setMax(10000);
             
             this.uieVoltsScale = UIEdit('Volts scale', 'd');
-            this.uieVoltsScale.setVal(10);
+            this.uieVoltsScale.setVal(29);
             this.uieVoltsScale.setMin(0);
-            this.uieVoltsScale.setMax(10);
+            this.uieVoltsScale.setMax(100);
             
             this.uieTimeStep = UIEdit('Time step (us)', 'd');
             this.uieTimeStep.setVal(24);    % nPoint has a 24 us control loop
@@ -1147,28 +1154,62 @@ classdef ScannerControl < HandlePlus
                ishandle(this.hMonitorAxis2D) & ...
                ishandle(this.hMonitorAxis1D)
 
-                set(this.hFigure, 'CurrentAxes', this.hMonitorAxis2D)
-                cla;
-                hold on
-                plot(this.dRVxSensor, this.dRVySensor, 'b', 'LineWidth', 2);
-                plot(this.dRVxCommand, this.dRVyCommand, 'b');
-                xlim([-this.uieVoltsScale.val() this.uieVoltsScale.val()])
-                ylim([-this.uieVoltsScale.val() this.uieVoltsScale.val()])
-                legend('sensor', 'command');
+%                 set(this.hFigure, 'CurrentAxes', this.hMonitorAxis2D)
+%                 cla;
+%                 hold on
 
-                set(this.hFigure, 'CurrentAxes', this.hMonitorAxis1D)
-                cla;
-                hold on
-                plot(this.dRTime*1000, this.dRVxSensor, 'r', 'LineWidth', 2);
-                plot(this.dRTime*1000, this.dRVySensor,'b', 'LineWidth', 2);
-                plot(this.dRTime*1000, this.dRVxCommand,'r');
-                plot(this.dRTime*1000, this.dRVyCommand,'b');
 
-                xlabel('Time [ms]')
-                ylabel('Volts')
-                legend('vx sensor','vy sensor', 'vx command', 'vy command');
-                xlim([0 max(this.dRTime*1000)])
-                ylim([-this.uieVoltsScale.val() this.uieVoltsScale.val()])
+                delete(this.hLinesSensorVxVsVy)
+                delete(this.hLinesCommandVxVsVy)
+                
+                this.hLinesSensorVxVsVy = plot(...
+                    this.hMonitorAxis2D, ...
+                    this.dRVxSensor, this.dRVySensor, 'b', ...
+                    'LineWidth', 2 ...
+                );
+                hold(this.hMonitorAxis2D, 'on')
+                this.hLinesCommandVxVsVy =  plot(...
+                    this.hMonitorAxis2D, ...
+                    this.dRVxCommand, this.dRVyCommand, 'b' ...
+                );
+                xlim(this.hMonitorAxis2D, [-this.uieVoltsScale.val() this.uieVoltsScale.val()])
+                ylim(this.hMonitorAxis2D, [-this.uieVoltsScale.val() this.uieVoltsScale.val()])
+                legend(this.hMonitorAxis2D, 'sensor', 'command');
+
+%                 set(this.hFigure, 'CurrentAxes', this.hMonitorAxis1D)
+%                 cla;
+%                 hold on
+
+                delete(this.hLinesVxSensor1D)
+                delete(this.hLinesVySensor1D)
+                delete(this.hLinesVxCommand1D)
+                delete(this.hLinesVyCommand1D)
+                
+                this.hLinesVxSensor1D = plot(...
+                    this.hMonitorAxis1D, ...
+                    this.dRTime*1000, this.dRVxSensor, 'r', ...
+                    'LineWidth', 2);
+                
+                hold(this.hMonitorAxis1D, 'on')
+                
+                this.hLinesVySensor1D = plot(...
+                    this.hMonitorAxis1D, ...
+                    this.dRTime*1000, this.dRVySensor,'b', ...
+                    'LineWidth', 2);
+                
+                this.hLinesVxCommand1D = plot(...
+                    this.hMonitorAxis1D, ...
+                    this.dRTime*1000, this.dRVxCommand,'r');
+                
+                this.hLinesVyCommand1D = plot(...
+                    this.hMonitorAxis1D, ...
+                    this.dRTime*1000, this.dRVyCommand,'b');
+
+                xlabel(this.hMonitorAxis1D, 'Time [ms]')
+                ylabel(this.hMonitorAxis1D, 'Volts')
+                legend(this.hMonitorAxis1D, 'vx sensor','vy sensor', 'vx command', 'vy command');
+                xlim(this.hMonitorAxis1D, [0 max(this.dRTime*1000)])
+                ylim(this.hMonitorAxis1D, [-this.uieVoltsScale.val() this.uieVoltsScale.val()])
 
                 this.updatePupilImg('device');
                 
@@ -1712,8 +1753,8 @@ classdef ScannerControl < HandlePlus
 
             dTop = dTop + dSep;
 
-            this.uieSawOffsetX.build(this.hWaveformSerpPanel, dLeftCol1, dTop, dEditWidth, MicUtils.dEDITHEIGHT);
-            this.uieSawOffsetY.build(this.hWaveformSerpPanel, dLeftCol2, dTop, dEditWidth, MicUtils.dEDITHEIGHT);            
+            this.uieSerpOffsetX.build(this.hWaveformSerpPanel, dLeftCol1, dTop, dEditWidth, MicUtils.dEDITHEIGHT);
+            this.uieSerpOffsetY.build(this.hWaveformSerpPanel, dLeftCol2, dTop, dEditWidth, MicUtils.dEDITHEIGHT);            
 
             dTop = dTop + dSep;
 
