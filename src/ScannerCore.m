@@ -1049,7 +1049,7 @@ classdef ScannerCore
             % Kurt's remaining code unaltered
             
             time_step_in_ms = time_step_in_us/1000;
-            samples = totalTime/time_step_in_ms; 
+            samples = ceil(totalTime/time_step_in_ms); 
             samples_per_ms = samples/totalTime;
             
             
@@ -1118,16 +1118,8 @@ classdef ScannerCore
             vx_gc = vx;
             vy_gc = vy;
             
-            % lengthxx = xx
-            % maxtt = max(totalTime)
-            % lengthtt = length(totalTime)
-            t = 1:1:totalTime*samples_per_ms; % sample number
-            
-            % t = sample number
-            % divide by (sample/ms) to get ms
-            % divide by 1000 to get us
-            
-            t=t/(samples_per_ms*1000); 
+            time_step = time_step_in_us * 1e-6;
+            t = 0 : time_step : (length(vx) - 1) * time_step;
             
             % plot(t*1000,vx_gc,'r',t*1000,vy_gc,'b')
             % % max(t)
