@@ -27,8 +27,9 @@ sc.build();
 <a name="dependencies"></a>
 ## Dependencies
 
-- [github/cnanders/mic](https://github.com/cnanders/mic) (for the UI)
-- [github/cnanders/matlab-npoint-lc400](https://github.com/cnanders/matlab-npoint-lc400) (for MATLAB USB serial communication with nPoint LC.400 controller)
+- [github/cnanders/matlab-instrument-control](https://github.com/cnanders/matlab-instrument-control) (for the UI) (v1.1.0)
+- ~~[github/cnanders/mic](https://github.com/cnanders/mic) (for the UI) (v1.0.0)~~
+- [github/cnanders/matlab-npoint-lc400](https://github.com/cnanders/matlab-npoint-lc400) (for MATLAB communication with nPoint LC.400 controller)
 
 <a name="project-structure"></a>
 # Recommended Project Structure
@@ -38,8 +39,9 @@ sc.build();
 		- github
 			- cnanders
                 - matlab-scanner-control-npoint **(this repo)**
-                - mic **(direct dependency)**
-                - matlab-npoint-lc400 **(direct dependency)**	
+                - ~~mic **(direct dependency)**~~
+                - matlab-instrument-control **(dependency)**
+                - matlab-npoint-lc400 **(dependency)**	
 				- matlab-ieee **(dependency of matlab-npoint-lc400)**
 				- matlab-hex **(dependency of matlab-ieee)**
 	- file1.m
