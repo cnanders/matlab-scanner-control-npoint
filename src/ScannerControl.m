@@ -125,7 +125,6 @@ classdef ScannerControl < mic.Base
         uieMultiRot
         uieMultiXOffset
         uieMultiYOffset
-        uieMultiFills
         uieMultiTransitTime
         uieTimeStep
         uipMultiTimeType
@@ -314,6 +313,108 @@ classdef ScannerControl < mic.Base
             
             
         end
+        
+        function load(this, st)
+           
+             this.uipType.load(st.uipType);
+             this.uipPlotType.load(st.uipPlotType);
+
+             this.uieMultiPoleNum.load(st.uieMultiPoleNum);
+             this.uieMultiSigMin.load(st.uieMultiSigMin);
+             this.uieMultiSigMax.load(st.uieMultiSigMax);
+             this.uieMultiCirclesPerPole.load(st.uieMultiCirclesPerPole);
+             this.uieMultiDwell.load(st.uieMultiDwell);  
+             this.uieMultiOffset.load(st.uieMultiOffset);
+             this.uieMultiRot.load(st.uieMultiRot);
+             this.uieMultiXOffset.load(st.uieMultiXOffset);
+             this.uieMultiYOffset.load(st.uieMultiYOffset);
+             this.uieMultiTransitTime.load(st.uieMultiTransitTime);
+             this.uieTimeStep.load(st.uieTimeStep);
+             this.uipMultiTimeType.load(st.uipMultiTimeType);
+             this.uieMultiHz.load(st.uieMultiHz);
+             this.uieMultiPeriod.load(st.uieMultiPeriod);
+ 
+             this.uieSawSigX.load(st.uieSawSigX);
+             this.uieSawPhaseX.load(st.uieSawPhaseX);
+             this.uieSawOffsetX.load(st.uieSawOffsetX);
+             this.uieSawSigY.load(st.uieSawSigY);
+             this.uieSawPhaseY.load(st.uieSawPhaseY);
+             this.uieSawOffsetY.load(st.uieSawOffsetY);
+             this.uipSawTimeType.load(st.uipSawTimeType);
+             this.uieSawHz.load(st.uieSawHz);
+             this.uieSawPeriod.load(st.uieSawPeriod);
+
+             this.uieSerpSigX.load(st.uieSerpSigX);
+             this.uieSerpSigY.load(st.uieSerpSigY);
+             this.uieSerpNumX.load(st.uieSerpNumX);
+             this.uieSerpNumY.load(st.uieSerpNumY);
+             this.uieSerpOffsetX.load(st.uieSerpOffsetX);
+             this.uieSerpOffsetY.load(st.uieSerpOffsetY);
+             this.uieSerpPeriod.load(st.uieSerpPeriod);
+
+             this.uieDCx.load(st.uieDCx);
+             this.uieDCy.load(st.uieDCy);
+
+             this.uieRastorData.load(st.uieRastorData);
+             this.uieRastorTransitTime.load(st.uieRastorTransitTime);
+
+             this.uieFilterHz.load(st.uieFilterHz);
+             this.uieVoltsScale.load(st.uieVoltsScale);
+             this.uieConvKernelSig.load(st.uieConvKernelSig);
+            
+        end
+        
+        function st = save(this)
+            
+            st = struct();
+            
+            st.uipType = this.uipType.save();
+            st.uipPlotType = this.uipPlotType.save();
+
+            st.uieMultiPoleNum = this.uieMultiPoleNum.save();
+            st.uieMultiSigMin = this.uieMultiSigMin.save();
+            st.uieMultiSigMax = this.uieMultiSigMax.save();
+            st.uieMultiCirclesPerPole = this.uieMultiCirclesPerPole.save();
+            st.uieMultiDwell = this.uieMultiDwell.save();  
+            st.uieMultiOffset = this.uieMultiOffset.save();
+            st.uieMultiRot = this.uieMultiRot.save();
+            st.uieMultiXOffset = this.uieMultiXOffset.save();
+            st.uieMultiYOffset =  this.uieMultiYOffset.save();
+            st.uieMultiTransitTime = this.uieMultiTransitTime.save();
+            st.uieTimeStep = this.uieTimeStep.save();
+            st.uipMultiTimeType = this.uipMultiTimeType.save();
+            st.uieMultiHz = this.uieMultiHz.save();
+            st.uieMultiPeriod = this.uieMultiPeriod.save();
+ 
+            st.uieSawSigX = this.uieSawSigX.save();
+            st.uieSawPhaseX = this.uieSawPhaseX.save();
+            st.uieSawOffsetX = this.uieSawOffsetX.save();
+            st.uieSawSigY = this.uieSawSigY.save();
+            st.uieSawPhaseY = this.uieSawPhaseY.save();
+            st.uieSawOffsetY = this.uieSawOffsetY.save();
+            st.uipSawTimeType = this.uipSawTimeType.save();
+            st.uieSawHz = this.uieSawHz.save();
+            st.uieSawPeriod = this.uieSawPeriod.save();
+
+            st.uieSerpSigX = this.uieSerpSigX.save();
+            st.uieSerpSigY = this.uieSerpSigY.save();
+            st.uieSerpNumX = this.uieSerpNumX.save();
+            st.uieSerpNumY = this.uieSerpNumY.save();
+            st.uieSerpOffsetX = this.uieSerpOffsetX.save();
+            st.uieSerpOffsetY = this.uieSerpOffsetY.save();
+            st.uieSerpPeriod = this.uieSerpPeriod.save();
+
+            st.uieDCx = this.uieDCx.save();
+            st.uieDCy = this.uieDCy.save();
+
+            st.uieRastorData = this.uieRastorData.save();
+            st.uieRastorTransitTime = this.uieRastorTransitTime.save();
+
+            st.uieFilterHz = this.uieFilterHz.save();
+            st.uieVoltsScale = this.uieVoltsScale.save();
+            st.uieConvKernelSig = this.uieConvKernelSig.save();
+
+        end
 
     end
     
@@ -328,7 +429,7 @@ classdef ScannerControl < mic.Base
             this.uipPlotType = mic.ui.common.Popup(...
                 'ceOptions', {'Preview', 'nPoint Monitor'}, ...
                 'cLabel', 'Select Plot Source');
-            addlistener(this.uipPlotType, 'eChange', @this.handlePlotType);
+            addlistener(this.uipPlotType, 'eChange', @this.onPlotTypeChange);
                         
             this.initPlotRecordPanel();
         end
@@ -448,7 +549,7 @@ classdef ScannerControl < mic.Base
             this.uipSawTimeType = mic.ui.common.Popup(...
                 'ceOptions', {'Period (ms)', 'Hz (avg)'}, ...
                 'cLabel', 'Select Time Type');
-            addlistener(this.uipSawTimeType, 'eChange', @this.handleSawTimeType);            
+            addlistener(this.uipSawTimeType, 'eChange', @this.onSawTimeTypeChange);            
             
             this.uieSawHz = mic.ui.common.Edit(...
                 'cLabel', 'Hz (avg)', ...
@@ -532,7 +633,7 @@ classdef ScannerControl < mic.Base
             this.uipMultiTimeType =         mic.ui.common.Popup(...
                 'ceOptions', {'Period (ms)', 'Hz (avg)'}, ...
                 'cLabel', 'Select Time Type');
-            addlistener(this.uipMultiTimeType, 'eChange', @this.handleMultiTimeType);            
+            addlistener(this.uipMultiTimeType, 'eChange', @this.onMultiTimeTypeChange);            
             
             this.uieMultiPeriod =           mic.ui.common.Edit(...
                 'cLabel', 'Period (ms)', ...
@@ -594,7 +695,7 @@ classdef ScannerControl < mic.Base
             this.uipType = mic.ui.common.Popup(...
                 'ceOptions', {'Multipole', 'DC', 'Rastor', 'Saw', 'Serpentine'}, ...
                 'cLabel', 'Select Waveform Type');
-            addlistener(this.uipType, 'eChange', @this.handleType);
+            addlistener(this.uipType, 'eChange', @this.onTypeChange);
             
             
             this.initWaveformGeneralPanel();
@@ -609,8 +710,8 @@ classdef ScannerControl < mic.Base
             this.uibSave = mic.ui.common.Button(...
                 'cText', 'Save');
             
-            addlistener(this.uibPreview, 'eChange', @this.handlePreview);
-            addlistener(this.uibSave, 'eChange', @this.handleSave);
+            addlistener(this.uibPreview, 'eChange', @this.onPreview);
+            addlistener(this.uibSave, 'eChange', @this.onSave);
             
         end
         
@@ -623,10 +724,10 @@ classdef ScannerControl < mic.Base
                 'lShowMove', true, ...
                 'lShowLabel', false, ...
                 'lShowRefresh', true);
-            this.uilSaved.setRefreshFcn(@this.refreshSaved);
+            this.uilSaved.setRefreshFcn(@this.onListRefresh);
             
-            addlistener(this.uilSaved, 'eChange', @this.handleSaved);
-            addlistener(this.uilSaved, 'eDelete', @this.handleSavedDelete);
+            addlistener(this.uilSaved, 'eChange', @this.onListChange);
+            addlistener(this.uilSaved, 'eDelete', @this.onListChangeDelete);
             
             
             this.uibWriteWaveform = mic.ui.common.Button('cText', 'Write nPoint');
@@ -708,7 +809,10 @@ classdef ScannerControl < mic.Base
             %}
         end
         
+       
+        
         function saveState(this)
+            
             
             %{
             cPath = fullfile(this.cDir, '..', this.cSaveDir, 'saved-state.mat');
@@ -773,7 +877,7 @@ classdef ScannerControl < mic.Base
         end
         
                 
-        function handleMultiTimeType(this, src, evt)
+        function onMultiTimeTypeChange(this, src, evt)
             
                                                 
             % Show the UIEdit based on popup type 
@@ -801,7 +905,7 @@ classdef ScannerControl < mic.Base
         end
 
         
-        function handleSawTimeType(this, src, evt)
+        function onSawTimeTypeChange(this, src, evt)
             
             
             % Show the UIEdit based on popup type
@@ -831,7 +935,7 @@ classdef ScannerControl < mic.Base
             
         end
         
-        function handleType(this, src, evt)
+        function onTypeChange(this, src, evt)
             
             
             % Build the sub-panel based on popup type 
@@ -961,7 +1065,7 @@ classdef ScannerControl < mic.Base
         end
         
         
-        function handlePlotType(this, src, evt)
+        function onPlotTypeChange(this, src, evt)
             
             
             % Debug: echo visibility of record button
@@ -1019,7 +1123,7 @@ classdef ScannerControl < mic.Base
                                                 
         end
         
-        function handlePreview(this, src, evt)
+        function onPreview(this, src, evt)
             
             % Change plot type to preview
             this.uipPlotType.setSelectedIndex(uint8(1));
@@ -1315,7 +1419,7 @@ classdef ScannerControl < mic.Base
         
         
         
-        function handleSave(this, src, evt)
+        function onSave(this, src, evt)
             
             
             % Generate a suggested name for save structure.  
@@ -1474,18 +1578,7 @@ classdef ScannerControl < mic.Base
                                     
             % Create a nested recursive structure of all public properties
             
-            s = this.saveClassInstance();
-            
-            
-            % Remove uilSaved from the structure.  We don't want to
-            % overwrite the list of available prescriptions when one is
-            % loaded
-            
-            s = rmfield(s, 'uilSaved');
-                        
-            % Save
-            
-            
+            s = this.save();
             
             save(fullfile(this.cDirWaveforms, cFileName), 's');
             
@@ -1501,8 +1594,6 @@ classdef ScannerControl < mic.Base
         end
         
         function saveAsciiFiles(this)
-            
-            
             
             % Save ascii files for nPoint software.  Make sure the time
             % step is 24 us.  This is the control loop clock so it will
@@ -1695,7 +1786,7 @@ classdef ScannerControl < mic.Base
             this.uieMultiHz.build(this.hWaveformMultiPanel, dLeftCol1, dTop, dEditWidth, mic.Utils.dEDITHEIGHT);                
 
             % Call handler for multitimetype to make active type visible
-            this.handleMultiTimeType();
+            this.onMultiTimeTypeChange();
             dTop = dTop + 45;
 
             this.uitMultiFreqRange.build(this.hWaveformMultiPanel, dLeftCol1, dTop, 170, 30);
@@ -1811,7 +1902,7 @@ classdef ScannerControl < mic.Base
 
             this.uieSawPeriod.build(this.hWaveformSawPanel, dLeftCol1, dTop, dEditWidth, mic.Utils.dEDITHEIGHT);
             this.uieSawHz.build(this.hWaveformSawPanel, dLeftCol1, dTop, dEditWidth, mic.Utils.dEDITHEIGHT);                
-            this.handleSawTimeType(); % Call handler for multitimetype to make active type visible
+            this.onSawTimeTypeChange(); % Call handler for multitimetype to make active type visible
 
             drawnow;
             
@@ -1939,7 +2030,7 @@ classdef ScannerControl < mic.Base
             this.uipPlotType.build(this.hPlotPanel, 10, 20, 190, mic.Utils.dEDITHEIGHT);
 
             % Call handler for popup to build type
-            this.handlePlotType();
+            this.onPlotTypeChange();
             
         end
         
@@ -2411,7 +2502,7 @@ classdef ScannerControl < mic.Base
             
         end
         
-        function handleSavedDelete(this, src, evt)
+        function onListChangeDelete(this, src, evt)
            
             % In this case, evt is an instance of EventWithData (custom
             % class that extends event.EventData) that has a property
@@ -2444,7 +2535,7 @@ classdef ScannerControl < mic.Base
 
         end
         
-        function handleSaved(this, src, evt)
+        function onListChange(this, src, evt)
             
                         
             % Make sure preview is showing
@@ -2455,9 +2546,9 @@ classdef ScannerControl < mic.Base
             
             
             % Load the .mat file
+            ceSelected = this.uilSaved.get();
             
-            
-            if ~isempty(this.uilSaved.ceSelected)
+            if ~isempty(ceSelected)
                 
                 % ceSelected is a cell of selected options - use the first
                 % one.  Populates a structure named s in the local
@@ -2465,7 +2556,7 @@ classdef ScannerControl < mic.Base
                 
                 cFile = fullfile( ...
                     this.cDirWaveforms, ...
-                    this.uilSaved.ceSelected{1} ...
+                    ceSelected{1} ...
                 );
             
                 
@@ -2473,14 +2564,17 @@ classdef ScannerControl < mic.Base
                 
                     load(cFile); % populates structure s in local workspace
 
-                    this.loadClassInstance(s);
+                    this.load(s);
                     
                     % When dVx, dVy, etc. are private
-                    % this.handlePreview();  
+                    this.onPreview();  
                     
                     % When dVx, dVy, etc. are public
+                    
+                    %{
                     this.updateAxes();
                     this.updatePupilImg('preview');
+                    %}
                     
                 else
                     
@@ -2628,11 +2722,11 @@ classdef ScannerControl < mic.Base
             
         end
         
-        function ceReturn = refreshSaved(this)
+        function ceReturn = onListRefresh(this)
             
             % Get path to the save directory
             
-            ceReturn = mic.Utils.dir2cell(this.cDirWaveforms, 'date', 'descend');
+            ceReturn = mic.Utils.dir2cell(this.cDirWaveforms, 'date', 'descend', '*.mat');
                         
         end
         
