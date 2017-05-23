@@ -1,4 +1,4 @@
-classdef ScannerControl < HandlePlus
+classdef ScannerControl < mic.Base
 %PUPILFILL Class that allows to monitor and the control of the Pupil fill
 %
 %   See also ScannerCore, RETICLEPICK, HEIGHTSENSOR
@@ -17,84 +17,8 @@ classdef ScannerControl < HandlePlus
     end
     
     properties
+                
         
-        
-        
-        dFreqMin        % minimum frequency
-        dFreqMax        % maximum frequency
-        
-        dVx
-        dVy
-        dVxCorrected
-        dVyCorrected
-        dTime
-        i32X
-        i32Y
-        
-        % Storage for record plot
-        dRVxCommand
-        dRVyCommand
-        dRVxSensor
-        dRVySensor
-        dRTime
-        
-        uipType
-        uipPlotType
-        
-        uieMultiPoleNum
-        uieMultiSigMin
-        uieMultiSigMax
-        uieMultiCirclesPerPole
-        uieMultiDwell
-        uieMultiOffset
-        uieMultiRot
-        uieMultiXOffset
-        uieMultiYOffset
-        uieMultiFills
-        uieMultiTransitTime
-        uieTimeStep
-        uipMultiTimeType
-        uieMultiHz
-        uieMultiPeriod
-        uitMultiFreqRange
-
-        uieSawSigX
-        uieSawPhaseX
-        uieSawOffsetX
-        uieSawSigY
-        uieSawPhaseY
-        uieSawOffsetY
-        uipSawTimeType
-        uieSawHz
-        uieSawPeriod
-        
-        uieSerpSigX
-        uieSerpSigY
-        uieSerpNumX
-        uieSerpNumY
-        uieSerpOffsetX
-        uieSerpOffsetY
-        uieSerpPeriod
-        
-        uieDCx
-        uieDCy
-        
-        uieRastorData
-        uieRastorTransitTime
-        uilSaved
-        
-        uieFilterHz
-        uieVoltsScale
-        uieConvKernelSig
-        
-        uibPreview
-        uibSave
-        uibRecord
-        uieRecordTime
-        
-        uibWriteWaveform
-        uibStartWaveform
-        uibStopWaveform
     end
     
     properties (SetAccess = private)
@@ -169,6 +93,83 @@ classdef ScannerControl < HandlePlus
         dPreviewPixels = 220;
         dPreviewScale = 1.1;
         
+        lUseNPoint = false
+        
+        dFreqMin        % minimum frequency
+        dFreqMax        % maximum frequency
+        
+        dVx
+        dVy
+        dVxCorrected
+        dVyCorrected
+        dTime
+        i32X
+        i32Y
+        
+        % Storage for record plot
+        dRVxCommand
+        dRVyCommand
+        dRVxSensor
+        dRVySensor
+        dRTime
+        
+        uipType
+        uipPlotType
+        
+        uieMultiPoleNum
+        uieMultiSigMin
+        uieMultiSigMax
+        uieMultiCirclesPerPole
+        uieMultiDwell
+        uieMultiOffset
+        uieMultiRot
+        uieMultiXOffset
+        uieMultiYOffset
+        uieMultiTransitTime
+        uieTimeStep
+        uipMultiTimeType
+        uieMultiHz
+        uieMultiPeriod
+        uitMultiFreqRange
+
+        uieSawSigX
+        uieSawPhaseX
+        uieSawOffsetX
+        uieSawSigY
+        uieSawPhaseY
+        uieSawOffsetY
+        uipSawTimeType
+        uieSawHz
+        uieSawPeriod
+        
+        uieSerpSigX
+        uieSerpSigY
+        uieSerpNumX
+        uieSerpNumY
+        uieSerpOffsetX
+        uieSerpOffsetY
+        uieSerpPeriod
+        
+        uieDCx
+        uieDCy
+        
+        uieRastorData
+        uieRastorTransitTime
+        uilSaved
+        
+        uieFilterHz
+        uieVoltsScale
+        uieConvKernelSig
+        
+        uibPreview
+        uibSave
+        uibRecord
+        uieRecordTime
+        
+        uibWriteWaveform
+        uibStartWaveform
+        uibStopWaveform
+        
     end
     
     events
@@ -203,7 +204,7 @@ classdef ScannerControl < HandlePlus
                 end
             end
             
-            this.checkDir(this.cDirWaveforms);
+            mic.Utils.checkDir(this.cDirWaveforms);
             
             this.init();
         end
@@ -258,7 +259,7 @@ classdef ScannerControl < HandlePlus
                 'Resize', 'off', ...
                 'HandleVisibility', 'on', ... % lets close all close the figure
                 'Visible', 'on', ...
-                'CloseRequestFcn', @this.cb ...
+                'CloseRequestFcn', @this.onCloseRequest ...
                 );
             
             drawnow;
@@ -312,6 +313,108 @@ classdef ScannerControl < HandlePlus
             
             
         end
+        
+        function load(this, st)
+           
+             this.uipType.load(st.uipType);
+             this.uipPlotType.load(st.uipPlotType);
+
+             this.uieMultiPoleNum.load(st.uieMultiPoleNum);
+             this.uieMultiSigMin.load(st.uieMultiSigMin);
+             this.uieMultiSigMax.load(st.uieMultiSigMax);
+             this.uieMultiCirclesPerPole.load(st.uieMultiCirclesPerPole);
+             this.uieMultiDwell.load(st.uieMultiDwell);  
+             this.uieMultiOffset.load(st.uieMultiOffset);
+             this.uieMultiRot.load(st.uieMultiRot);
+             this.uieMultiXOffset.load(st.uieMultiXOffset);
+             this.uieMultiYOffset.load(st.uieMultiYOffset);
+             this.uieMultiTransitTime.load(st.uieMultiTransitTime);
+             this.uieTimeStep.load(st.uieTimeStep);
+             this.uipMultiTimeType.load(st.uipMultiTimeType);
+             this.uieMultiHz.load(st.uieMultiHz);
+             this.uieMultiPeriod.load(st.uieMultiPeriod);
+ 
+             this.uieSawSigX.load(st.uieSawSigX);
+             this.uieSawPhaseX.load(st.uieSawPhaseX);
+             this.uieSawOffsetX.load(st.uieSawOffsetX);
+             this.uieSawSigY.load(st.uieSawSigY);
+             this.uieSawPhaseY.load(st.uieSawPhaseY);
+             this.uieSawOffsetY.load(st.uieSawOffsetY);
+             this.uipSawTimeType.load(st.uipSawTimeType);
+             this.uieSawHz.load(st.uieSawHz);
+             this.uieSawPeriod.load(st.uieSawPeriod);
+
+             this.uieSerpSigX.load(st.uieSerpSigX);
+             this.uieSerpSigY.load(st.uieSerpSigY);
+             this.uieSerpNumX.load(st.uieSerpNumX);
+             this.uieSerpNumY.load(st.uieSerpNumY);
+             this.uieSerpOffsetX.load(st.uieSerpOffsetX);
+             this.uieSerpOffsetY.load(st.uieSerpOffsetY);
+             this.uieSerpPeriod.load(st.uieSerpPeriod);
+
+             this.uieDCx.load(st.uieDCx);
+             this.uieDCy.load(st.uieDCy);
+
+             this.uieRastorData.load(st.uieRastorData);
+             this.uieRastorTransitTime.load(st.uieRastorTransitTime);
+
+             this.uieFilterHz.load(st.uieFilterHz);
+             this.uieVoltsScale.load(st.uieVoltsScale);
+             this.uieConvKernelSig.load(st.uieConvKernelSig);
+            
+        end
+        
+        function st = save(this)
+            
+            st = struct();
+            
+            st.uipType = this.uipType.save();
+            st.uipPlotType = this.uipPlotType.save();
+
+            st.uieMultiPoleNum = this.uieMultiPoleNum.save();
+            st.uieMultiSigMin = this.uieMultiSigMin.save();
+            st.uieMultiSigMax = this.uieMultiSigMax.save();
+            st.uieMultiCirclesPerPole = this.uieMultiCirclesPerPole.save();
+            st.uieMultiDwell = this.uieMultiDwell.save();  
+            st.uieMultiOffset = this.uieMultiOffset.save();
+            st.uieMultiRot = this.uieMultiRot.save();
+            st.uieMultiXOffset = this.uieMultiXOffset.save();
+            st.uieMultiYOffset =  this.uieMultiYOffset.save();
+            st.uieMultiTransitTime = this.uieMultiTransitTime.save();
+            st.uieTimeStep = this.uieTimeStep.save();
+            st.uipMultiTimeType = this.uipMultiTimeType.save();
+            st.uieMultiHz = this.uieMultiHz.save();
+            st.uieMultiPeriod = this.uieMultiPeriod.save();
+ 
+            st.uieSawSigX = this.uieSawSigX.save();
+            st.uieSawPhaseX = this.uieSawPhaseX.save();
+            st.uieSawOffsetX = this.uieSawOffsetX.save();
+            st.uieSawSigY = this.uieSawSigY.save();
+            st.uieSawPhaseY = this.uieSawPhaseY.save();
+            st.uieSawOffsetY = this.uieSawOffsetY.save();
+            st.uipSawTimeType = this.uipSawTimeType.save();
+            st.uieSawHz = this.uieSawHz.save();
+            st.uieSawPeriod = this.uieSawPeriod.save();
+
+            st.uieSerpSigX = this.uieSerpSigX.save();
+            st.uieSerpSigY = this.uieSerpSigY.save();
+            st.uieSerpNumX = this.uieSerpNumX.save();
+            st.uieSerpNumY = this.uieSerpNumY.save();
+            st.uieSerpOffsetX = this.uieSerpOffsetX.save();
+            st.uieSerpOffsetY = this.uieSerpOffsetY.save();
+            st.uieSerpPeriod = this.uieSerpPeriod.save();
+
+            st.uieDCx = this.uieDCx.save();
+            st.uieDCy = this.uieDCy.save();
+
+            st.uieRastorData = this.uieRastorData.save();
+            st.uieRastorTransitTime = this.uieRastorTransitTime.save();
+
+            st.uieFilterHz = this.uieFilterHz.save();
+            st.uieVoltsScale = this.uieVoltsScale.save();
+            st.uieConvKernelSig = this.uieConvKernelSig.save();
+
+        end
 
     end
     
@@ -323,8 +426,10 @@ classdef ScannerControl < HandlePlus
         
         function initPlotPanel(this)
             
-            this.uipPlotType = UIPopup({'Preview', 'nPoint Monitor'}, 'Select Plot Source', true);
-            addlistener(this.uipPlotType, 'eChange', @this.handlePlotType);
+            this.uipPlotType = mic.ui.common.Popup(...
+                'ceOptions', {'Preview', 'nPoint Monitor'}, ...
+                'cLabel', 'Select Plot Source');
+            addlistener(this.uipPlotType, 'eChange', @this.onPlotTypeChange);
                         
             this.initPlotRecordPanel();
         end
@@ -335,13 +440,16 @@ classdef ScannerControl < HandlePlus
         
         function initPlotRecordPanel(this)
             
-            this.uibRecord = UIButton('Record');
-            this.uieRecordTime = UIEdit('Time (ms)', 'd', false);
+            this.uibRecord = mic.ui.common.Button('cText', 'Record');
+            this.uieRecordTime = mic.ui.common.Edit(...
+                'cLabel', 'Time (ms)', ...
+                'cType', 'd', ...
+                'lShowLabel', false);
             
              % Default values
             this.uieRecordTime.setMax(2000);
             this.uieRecordTime.setMin(0);
-            this.uieRecordTime.setVal(100);
+            this.uieRecordTime.set(100);
             
             addlistener(this.uibRecord, 'eChange', @this.onRecordClick);
             
@@ -349,36 +457,50 @@ classdef ScannerControl < HandlePlus
         
         function initWaveformSerpPanel(this)
             
-            this.uieSerpSigX = UIEdit('Sig X', 'd'); 
+            this.uieSerpSigX = mic.ui.common.Edit(...
+                'cLabel', 'Sig X', ...
+                'cType', 'd'); 
             this.uieSerpSigX.setMin(0);
             this.uieSerpSigX.setMax(1);
-            this.uieSerpSigX.setVal(0.5);
+            this.uieSerpSigX.set(0.5);
             
-            this.uieSerpNumX = UIEdit('Num X (odd)', 'u8');
-            this.uieSerpNumX.setVal(uint8(7));
+            this.uieSerpNumX = mic.ui.common.Edit(...
+                'cLabel', 'Num X (odd)', ...
+                'cType', 'u8');
+            this.uieSerpNumX.set(uint8(7));
             this.uieSerpNumX.setMin( uint8(4));
             this.uieSerpNumX.setMax( uint8(51));
             
-            this.uieSerpOffsetX = UIEdit('Offset X', 'd');
+            this.uieSerpOffsetX = mic.ui.common.Edit(...
+                'cLabel', 'Offset X', ...
+                'cType', 'd');
             this.uieSerpOffsetX.setMin(-1);
             this.uieSerpOffsetX.setMax(1);
             
-            this.uieSerpSigY = UIEdit('Sig Y', 'd'); 
+            this.uieSerpSigY = mic.ui.common.Edit(...
+                'cLabel', 'Sig Y', ...
+                'cType', 'd'); 
             this.uieSerpSigY.setMin(0);
             this.uieSerpSigY.setMax(1);
-            this.uieSerpSigY.setVal(0.5);            
+            this.uieSerpSigY.set(0.5);            
             
-            this.uieSerpNumY = UIEdit('Num Y (odd)', 'u8');
-            this.uieSerpNumY.setVal(uint8(7));
+            this.uieSerpNumY = mic.ui.common.Edit(...
+                'cLabel', 'Num Y (odd)', ...
+                'cType', 'u8');
+            this.uieSerpNumY.set(uint8(7));
             this.uieSerpNumY.setMin( uint8(4));
             this.uieSerpNumY.setMax( uint8(51));
             
-            this.uieSerpOffsetY = UIEdit('Offset Y', 'd');
+            this.uieSerpOffsetY = mic.ui.common.Edit(...
+                'cLabel', 'Offset Y', ...
+                'cType', 'd');
             this.uieSerpOffsetY.setMin(-1);
             this.uieSerpOffsetY.setMax(1);
             
-            this.uieSerpPeriod = UIEdit('Period (ms)', 'd');
-            this.uieSerpPeriod.setVal(100); 
+            this.uieSerpPeriod = mic.ui.common.Edit(...
+                'cLabel', 'Period (ms)', ...
+                'cType', 'd');
+            this.uieSerpPeriod.set(100); 
             this.uieSerpPeriod.setMin( 1);
             this.uieSerpPeriod.setMax( 10000);
             
@@ -386,42 +508,60 @@ classdef ScannerControl < HandlePlus
         
         function initWaveformSawPanel(this)
             
-            this.uieSawSigX = UIEdit('Sig X', 'd'); 
+            this.uieSawSigX = mic.ui.common.Edit(...
+                'cLabel', 'Sig X', ...
+                'cType', 'd'); 
             this.uieSawSigX.setMin(0);
             this.uieSawSigX.setMax(1);
-            this.uieSawSigX.setVal(0.5);
+            this.uieSawSigX.set(0.5);
             
-            this.uieSawPhaseX = UIEdit('Phase X (pi)', 'd');
+            this.uieSawPhaseX = mic.ui.common.Edit(...
+                'cLabel', 'Phase X (pi)', ...
+                'cType',  'd');
             this.uieSawPhaseX.setMin(-2);
             this.uieSawPhaseX.setMax(2);
                         
-            this.uieSawOffsetX = UIEdit('Offset X', 'd');
+            this.uieSawOffsetX = mic.ui.common.Edit(...
+                'cLabel', 'Offset X', ...
+                'cType',  'd');
             this.uieSawOffsetX.setMin(-1);
             this.uieSawOffsetX.setMax(1);
             
-            this.uieSawSigY = UIEdit('Sig Y', 'd'); 
+            this.uieSawSigY = mic.ui.common.Edit(...
+                'cLabel', 'Sig Y', ...
+                'cType',  'd'); 
             this.uieSawSigY.setMin(0);
             this.uieSawSigY.setMax(1);
-            this.uieSawSigY.setVal(0.5);            
+            this.uieSawSigY.set(0.5);            
             
-            this.uieSawPhaseY = UIEdit('Phase Y (pi)', 'd');
+            this.uieSawPhaseY = mic.ui.common.Edit(...
+                'cLabel', 'Phase Y (pi)', ...
+                'cType',  'd');
             this.uieSawPhaseY.setMin(-2);
             this.uieSawPhaseY.setMax(2);
                         
-            this.uieSawOffsetY = UIEdit('Offset Y', 'd');
+            this.uieSawOffsetY = mic.ui.common.Edit(...
+                'cLabel', 'Offset Y', ...
+                'cType',  'd');
             this.uieSawOffsetY.setMin(-1);
             this.uieSawOffsetY.setMax(1);
                                     
-            this.uipSawTimeType = UIPopup({'Period (ms)', 'Hz (avg)'}, 'Select Time Type', true);
-            addlistener(this.uipSawTimeType, 'eChange', @this.handleSawTimeType);            
+            this.uipSawTimeType = mic.ui.common.Popup(...
+                'ceOptions', {'Period (ms)', 'Hz (avg)'}, ...
+                'cLabel', 'Select Time Type');
+            addlistener(this.uipSawTimeType, 'eChange', @this.onSawTimeTypeChange);            
             
-            this.uieSawHz = UIEdit('Hz (avg)', 'd');
+            this.uieSawHz = mic.ui.common.Edit(...
+                'cLabel', 'Hz (avg)', ...
+                'cType',  'd');
             this.uieSawHz.setMin(0);
             this.uieSawHz.setMax(1000);
-            this.uieSawHz.setVal(200);
+            this.uieSawHz.set(200);
             
-            this.uieSawPeriod = UIEdit('Period (ms)', 'd');
-            this.uieSawPeriod.setVal(100); 
+            this.uieSawPeriod = mic.ui.common.Edit(...
+                'cLabel', 'Period (ms)', ...
+                'cType',  'd');
+            this.uieSawPeriod.set(100); 
             this.uieSawPeriod.setMin(1);
             this.uieSawPeriod.setMax(10000);
             
@@ -430,10 +570,14 @@ classdef ScannerControl < HandlePlus
         function initWaveformRastorPanel(this)
             
              
-            this.uieRastorData =            UIEdit('(sig_x,sig_y,ms),(sig_x,sig_y,ms),...', 'c');
-            this.uieRastorTransitTime =     UIEdit('Transit Time (s)', 'd');
+            this.uieRastorData = mic.ui.common.Edit(...
+                'cLabel', '(sig_x,sig_y,ms),(sig_x,sig_y,ms),...', ...
+                'cType', 'c');
+            this.uieRastorTransitTime =     mic.ui.common.Edit(...
+                'cLabel', 'Transit Time (s)', ...
+                'cType', 'd');
             
-            this.uieRastorData.setVal('(0.3,0.3,5),(0.5,0.5,10),(0.4,0.4,4)');
+            this.uieRastorData.set('(0.3,0.3,5),(0.5,0.5,10),(0.4,0.4,4)');
 
            
             
@@ -441,44 +585,74 @@ classdef ScannerControl < HandlePlus
         
         function initWaveformDCPanel(this)
            
-            this.uieDCx =                   UIEdit('X offset', 'd');
-            this.uieDCy =                   UIEdit('Y offset', 'd');
+            this.uieDCx = mic.ui.common.Edit(...
+                'cLabel', 'X offset', ...
+                'cType', 'd');
+            this.uieDCy = mic.ui.common.Edit(...
+                'cLabel', 'Y offset', ...
+                'cType', 'd');
             
-            this.uieDCx.setVal(0.5);
-            this.uieDCy.setVal(0.3);
+            this.uieDCx.set(0.5);
+            this.uieDCy.set(0.3);
         end
         
         function initWaveformMultiPanel(this)
             
-            this.uieMultiPoleNum =          UIEdit('Poles', 'u8');
-            this.uieMultiSigMin =           UIEdit('Sig min', 'd');
-            this.uieMultiSigMax =           UIEdit('Sig max', 'd');
-            this.uieMultiCirclesPerPole =   UIEdit('Circles/pole', 'u8');
-            this.uieMultiDwell =            UIEdit('Dwell', 'u8');
-            this.uieMultiOffset =           UIEdit('Pole Offset', 'd');
-            this.uieMultiRot =              UIEdit('Rot', 'd');
-            this.uieMultiXOffset =          UIEdit('X Global Offset', 'd');
-            this.uieMultiYOffset =          UIEdit('Y Global Offset', 'd');
+            this.uieMultiPoleNum =          mic.ui.common.Edit(...
+                'cLabel', 'Poles', ...
+                'cType', 'u8');
+            this.uieMultiSigMin =           mic.ui.common.Edit(...
+                'cLabel', 'Sig min', ...
+                'cType',  'd');
+            this.uieMultiSigMax =           mic.ui.common.Edit(...
+                'cLabel', 'Sig max', ...
+                'cType',  'd');
+            this.uieMultiCirclesPerPole =   mic.ui.common.Edit(...
+                'cLabel', 'Circles/pole', ...
+                'cType',  'u8');
+            this.uieMultiDwell =            mic.ui.common.Edit(...
+                'cLabel', 'Dwell', ...
+                'cType',  'u8');
+            this.uieMultiOffset =           mic.ui.common.Edit(...
+                'cLabel', 'Pole Offset', ...
+                'cType',  'd');
+            this.uieMultiRot =              mic.ui.common.Edit(...
+                'cLabel', 'Rot', ...
+                'cType',  'd');
+            this.uieMultiXOffset =          mic.ui.common.Edit(...
+                'cLabel', 'X Global Offset', ...
+                'cType',  'd');
+            this.uieMultiYOffset =          mic.ui.common.Edit(...
+                'cLabel', 'Y Global Offset', ...
+                'cType',  'd');
 
-            this.uieMultiTransitTime =      UIEdit('Transit Frac', 'd');
+            this.uieMultiTransitTime =      mic.ui.common.Edit(...
+                'cLabel', 'Transit Frac', ...
+                'cType',  'd');
             
-            this.uipMultiTimeType =         UIPopup({'Period (ms)', 'Hz (avg)'}, 'Select Time Type', true);
-            addlistener(this.uipMultiTimeType, 'eChange', @this.handleMultiTimeType);            
+            this.uipMultiTimeType =         mic.ui.common.Popup(...
+                'ceOptions', {'Period (ms)', 'Hz (avg)'}, ...
+                'cLabel', 'Select Time Type');
+            addlistener(this.uipMultiTimeType, 'eChange', @this.onMultiTimeTypeChange);            
             
-            this.uieMultiPeriod =           UIEdit('Period (ms)', 'd');
-            this.uieMultiHz =               UIEdit('Hz (avg)', 'd');
-            this.uitMultiFreqRange =        UIText('');
+            this.uieMultiPeriod =           mic.ui.common.Edit(...
+                'cLabel', 'Period (ms)', ...
+                'cType',  'd');
+            this.uieMultiHz =               mic.ui.common.Edit(...
+                'cLabel', 'Hz (avg)', ...
+                'cType',  'd');
+            this.uitMultiFreqRange =        mic.ui.common.Text('cVal', '');
             
             % Defaults
-            this.uieMultiPoleNum.setVal(uint8(4));
-            this.uieMultiSigMin.setVal(0.2);
-            this.uieMultiSigMax.setVal(0.3);
-            this.uieMultiCirclesPerPole.setVal(uint8(2));
-            this.uieMultiDwell.setVal(uint8(2));
-            this.uieMultiOffset.setVal(0.6);
-            this.uieMultiTransitTime.setVal(0.08);
-            this.uieMultiHz.setVal(200);
-            this.uieMultiPeriod.setVal(100);
+            this.uieMultiPoleNum.set(uint8(4));
+            this.uieMultiSigMin.set(0.2);
+            this.uieMultiSigMax.set(0.3);
+            this.uieMultiCirclesPerPole.set(uint8(2));
+            this.uieMultiDwell.set(uint8(2));
+            this.uieMultiOffset.set(0.6);
+            this.uieMultiTransitTime.set(0.08);
+            this.uieMultiHz.set(200);
+            this.uieMultiPeriod.set(100);
             
             
         end
@@ -487,22 +661,30 @@ classdef ScannerControl < HandlePlus
             
             % *********** General waveform panel
             
-            this.uieFilterHz = UIEdit('Filter Hz', 'd');
-            this.uieFilterHz.setVal(400);
+            this.uieFilterHz = mic.ui.common.Edit(...
+                'cLabel', 'Filter Hz', ...
+                'cType', 'd');
+            this.uieFilterHz.set(400);
             this.uieFilterHz.setMin(1);
             this.uieFilterHz.setMax(10000);
             
-            this.uieVoltsScale = UIEdit('Volts scale', 'd');
-            this.uieVoltsScale.setVal(29);
+            this.uieVoltsScale = mic.ui.common.Edit(...
+                'cLabel', 'Volts scale', ...
+                'cType', 'd');
+            this.uieVoltsScale.set(29);
             this.uieVoltsScale.setMin(0);
             this.uieVoltsScale.setMax(100);
             
-            this.uieTimeStep = UIEdit('Time step (us)', 'd');
-            this.uieTimeStep.setVal(24);    % nPoint has a 24 us control loop
+            this.uieTimeStep = mic.ui.common.Edit(...
+                'cLabel', 'Time step (us)', ...
+                'cType', 'd');
+            this.uieTimeStep.set(24);    % nPoint has a 24 us control loop
             
             
-            this.uieConvKernelSig = UIEdit('Conv. kernel sig', 'd');
-            this.uieConvKernelSig.setVal(0.05);
+            this.uieConvKernelSig = mic.ui.common.Edit(...
+                'cLabel', 'Conv. kernel sig', ...
+                'cType', 'd');
+            this.uieConvKernelSig.set(0.05);
             this.uieConvKernelSig.setMin(0.01);
             this.uieConvKernelSig.setMax(1);
             
@@ -510,8 +692,10 @@ classdef ScannerControl < HandlePlus
         
         function initWaveformPanel(this)
             
-            this.uipType = UIPopup({'Multipole', 'DC', 'Rastor', 'Saw', 'Serpentine'}, 'Select Waveform Type', true);
-            addlistener(this.uipType, 'eChange', @this.handleType);
+            this.uipType = mic.ui.common.Popup(...
+                'ceOptions', {'Multipole', 'DC', 'Rastor', 'Saw', 'Serpentine'}, ...
+                'cLabel', 'Select Waveform Type');
+            addlistener(this.uipType, 'eChange', @this.onTypeChange);
             
             
             this.initWaveformGeneralPanel();
@@ -521,31 +705,39 @@ classdef ScannerControl < HandlePlus
             this.initWaveformSawPanel();
             this.initWaveformSerpPanel();
             
-            this.uibPreview = UIButton('Preview');
-            this.uibSave = UIButton('Save');
+            this.uibPreview = mic.ui.common.Button(...
+                'cText', 'Preview');
+            this.uibSave = mic.ui.common.Button(...
+                'cText', 'Save');
             
-            addlistener(this.uibPreview, 'eChange', @this.handlePreview);
-            addlistener(this.uibSave, 'eChange', @this.handleSave);
+            addlistener(this.uibPreview, 'eChange', @this.onPreview);
+            addlistener(this.uibSave, 'eChange', @this.onSave);
             
         end
         
         function initSavedWaveformsPanel(this)
             
-            this.uilSaved = UIList( cell(1,0), '', true, true, false, true);
-            this.uilSaved.setRefreshFcn(@this.refreshSaved);
+            this.uilSaved = mic.ui.common.List(...
+                'ceOptions', cell(1,0), ...
+                'cLabel', '', ...
+                'lShowDelete', true, ...
+                'lShowMove', true, ...
+                'lShowLabel', false, ...
+                'lShowRefresh', true);
+            this.uilSaved.setRefreshFcn(@this.onListRefresh);
             
-            addlistener(this.uilSaved, 'eChange', @this.handleSaved);
-            addlistener(this.uilSaved, 'eDelete', @this.handleSavedDelete);
+            addlistener(this.uilSaved, 'eChange', @this.onListChange);
+            addlistener(this.uilSaved, 'eDelete', @this.onListChangeDelete);
             
             
-            this.uibWriteWaveform = UIButton('Write nPoint');
+            this.uibWriteWaveform = mic.ui.common.Button('cText', 'Write nPoint');
             addlistener(this.uibWriteWaveform, 'eChange', @this.onWriteClick);
             
             
-            this.uibStartWaveform = UIButton('Start nPoint');
+            this.uibStartWaveform = mic.ui.common.Button('cText', 'Start nPoint');
             addlistener(this.uibStartWaveform, 'eChange', @this.onStartClick);
             
-            this.uibStopWaveform = UIButton('Stop nPoint');
+            this.uibStopWaveform = mic.ui.common.Button('cText', 'Stop nPoint');
             addlistener(this.uibStopWaveform, 'eChange', @this.onStopClick);
             
         end
@@ -582,9 +774,12 @@ classdef ScannerControl < HandlePlus
             % https://github.com/cnanders/matlab-npoint-lc400
             
             % this.np = nPoint(this.cl, this.cDevice);
-            this.np = npoint.lc400.LC400('cPort', this.cPortNPoint);
-            this.np.init();
-            this.np.connect();
+            
+            if this.lUseNPoint
+                this.np = npoint.lc400.LC400('cPort', this.cPortNPoint);
+                this.np.init();
+                this.np.connect();
+            end
             
             
             % addlistener(this.np, 'eConnect', @this.handleConnect);
@@ -614,7 +809,10 @@ classdef ScannerControl < HandlePlus
             %}
         end
         
+       
+        
         function saveState(this)
+            
             
             %{
             cPath = fullfile(this.cDir, '..', this.cSaveDir, 'saved-state.mat');
@@ -631,7 +829,7 @@ classdef ScannerControl < HandlePlus
         function onLC400Connect(this)
             this.lConnected = true;
             
-            if this.uipPlotType.u8Selected == uint8(2)
+            if this.uipPlotType.getSelectedIndex() == uint8(2)
                 % nPoint Monitor
                 if ishandle(this.hPlotRecordPanel)
                     set(this.hPlotRecordPanel, 'Visible', 'on');
@@ -679,11 +877,11 @@ classdef ScannerControl < HandlePlus
         end
         
                 
-        function handleMultiTimeType(this, src, evt)
+        function onMultiTimeTypeChange(this, src, evt)
             
                                                 
             % Show the UIEdit based on popup type 
-            switch this.uipMultiTimeType.u8Selected
+            switch this.uipMultiTimeType.getSelectedIndex()
                 case uint8(1)
                     % Period
                     if this.uieMultiHz.isVisible()
@@ -707,12 +905,12 @@ classdef ScannerControl < HandlePlus
         end
 
         
-        function handleSawTimeType(this, src, evt)
+        function onSawTimeTypeChange(this, src, evt)
             
             
             % Show the UIEdit based on popup type
             
-            switch this.uipSawTimeType.u8Selected
+            switch this.uipSawTimeType.getSelectedIndex()
                 case uint8(1)
                     % Period
                     if this.uieSawHz.isVisible()
@@ -737,11 +935,11 @@ classdef ScannerControl < HandlePlus
             
         end
         
-        function handleType(this, src, evt)
+        function onTypeChange(this, src, evt)
             
             
             % Build the sub-panel based on popup type 
-            switch this.uipType.u8Selected
+            switch this.uipType.getSelectedIndex()
                 case uint8(1)
                     % Multi
                     this.hideOtherWaveformPanels(this.hWaveformMultiPanel);
@@ -818,11 +1016,12 @@ classdef ScannerControl < HandlePlus
             % loop through all panels
             for n = 1:length(ceh)            
                 
+                ceOptions = this.uipType.getOptions();
                 %{
                 this.msg( ...
                     sprintf( ...
                         'PupilFill.hideOtherWaveformPanels() \n\t panel: %s \n\t ishandle: %1.0f \n\t handleval: %1.0f \n\t visible: %s \n\t isequal: %1.0f ', ...
-                        this.uipType.ceOptions{uint8(n)}, ...
+                        ceOptions{uint8(n)}, ...
                         +ishandle(ceh{n}), ...
                         ceh{n}, ...
                         get(ceh{n}, 'Visible'), ...
@@ -834,7 +1033,8 @@ classdef ScannerControl < HandlePlus
                 if ishandle(ceh{n}) & ...
                    strcmp(get(ceh{n}, 'Visible'), 'on') & ...
                    (isempty(h) | ceh{n} ~= h)
-                    this.msg(sprintf('PupilFill.hideOtherWaveformPanels() hiding %s panel', this.uipType.ceOptions{uint8(n)}));
+                    ceOptions = this.uipType.getOptions();
+                    this.msg(sprintf('PupilFill.hideOtherWaveformPanels() hiding %s panel', ceOptions{uint8(n)}));
                     set(ceh{n}, 'Visible', 'off');
                     
                 end
@@ -865,7 +1065,7 @@ classdef ScannerControl < HandlePlus
         end
         
         
-        function handlePlotType(this, src, evt)
+        function onPlotTypeChange(this, src, evt)
             
             
             % Debug: echo visibility of record button
@@ -878,7 +1078,7 @@ classdef ScannerControl < HandlePlus
             this.hidePlotPanels();
                         
             % Build the sub-panel based on popup type 
-            switch this.uipPlotType.u8Selected
+            switch this.uipPlotType.getSelectedIndex()
                 case uint8(1)
                     % Preview
                     if ishandle(this.hPlotPreviewPanel)
@@ -923,17 +1123,17 @@ classdef ScannerControl < HandlePlus
                                                 
         end
         
-        function handlePreview(this, src, evt)
+        function onPreview(this, src, evt)
             
             % Change plot type to preview
-            this.uipPlotType.u8Selected = uint8(1);
+            this.uipPlotType.setSelectedIndex(uint8(1));
             
             
             this.updateWaveforms();
             this.updateAxes();
             this.updatePupilImg('preview');
             
-            if this.uipType.u8Selected == uint8(1)
+            if this.uipType.getSelectedIndex == uint8(1)
                 
                 % Update multi range
                 
@@ -954,8 +1154,8 @@ classdef ScannerControl < HandlePlus
                 dC = 2e-6; % advertised
                 dC_scale_factor = 300/113;
                 
-                dVdt_sig_max = 2*pi*90*this.uieMultiSigMax.val()*this.dFreqMin;
-                dVdt_sig_min = 2*pi*90*this.uieMultiSigMin.val()*this.dFreqMax;
+                dVdt_sig_max = 2*pi*90*this.uieMultiSigMax.get()*this.dFreqMin;
+                dVdt_sig_min = 2*pi*90*this.uieMultiSigMin.get()*this.dFreqMax;
                 dI_sig_max = dC*dC_scale_factor*dVdt_sig_max*1000; % mA
                 dI_sig_min = dC*dC_scale_factor*dVdt_sig_min*1000; % mA
                 
@@ -966,7 +1166,7 @@ classdef ScannerControl < HandlePlus
                     dI_sig_max ...
                     );
              
-                this.uitMultiFreqRange.cVal = cMsg;
+                this.uitMultiFreqRange.set(cMsg);
             end
             
         end
@@ -985,14 +1185,14 @@ classdef ScannerControl < HandlePlus
             %
             % and update plot preview
             
-            switch this.uipType.u8Selected
+            switch this.uipType.getSelectedIndex()
                 case uint8(1)
                     % Multi
                     
                     % Figure type
                     
                     % Show the UIEdit based on popup type 
-                    switch this.uipMultiTimeType.u8Selected
+                    switch this.uipMultiTimeType.getSelectedIndex()
                         case uint8(1)
                             % Period
                             lPeriod = true;
@@ -1010,65 +1210,65 @@ classdef ScannerControl < HandlePlus
                      this.dTime, ...
                      this.dFreqMin, ...
                      this.dFreqMax] = ScannerCore.getMulti( ...
-                        double(this.uieMultiPoleNum.val()), ...
-                        this.uieMultiSigMin.val(), ...
-                        this.uieMultiSigMax.val(), ...
-                        double(this.uieMultiCirclesPerPole.val()), ...
-                        double(this.uieMultiDwell.val()), ...
-                        this.uieMultiTransitTime.val(), ...
-                        this.uieMultiOffset.val(), ...
-                        this.uieMultiRot.val(), ...
-                        this.uieMultiXOffset.val(), ...
-                        this.uieMultiYOffset.val(), ...
-                        this.uieMultiHz.val(), ...
-                        this.uieVoltsScale.val(), ...
-                        this.uieTimeStep.val()*1e-6, ...         
-                        this.uieFilterHz.val(), ... 
-                        this.uieMultiPeriod.val()/1000, ...
+                        double(this.uieMultiPoleNum.get()), ...
+                        this.uieMultiSigMin.get(), ...
+                        this.uieMultiSigMax.get(), ...
+                        double(this.uieMultiCirclesPerPole.get()), ...
+                        double(this.uieMultiDwell.get()), ...
+                        this.uieMultiTransitTime.get(), ...
+                        this.uieMultiOffset.get(), ...
+                        this.uieMultiRot.get(), ...
+                        this.uieMultiXOffset.get(), ...
+                        this.uieMultiYOffset.get(), ...
+                        this.uieMultiHz.get(), ...
+                        this.uieVoltsScale.get(), ...
+                        this.uieTimeStep.get()*1e-6, ...         
+                        this.uieFilterHz.get(), ... 
+                        this.uieMultiPeriod.get()/1000, ...
                         lPeriod ...
                         );
                     
                 case uint8(2)
                     % DC offset
                     [this.dVx, this.dVy, this.dVxCorrected, this.dVyCorrected, this.dTime] = ScannerCore.getDC( ...
-                        this.uieDCx.val(), ...
-                        this.uieDCy.val(),...
-                        this.uieVoltsScale.val(), ...
-                        this.uieTimeStep.val()*1e-6 ...         
+                        this.uieDCx.get(), ...
+                        this.uieDCy.get(),...
+                        this.uieVoltsScale.get(), ...
+                        this.uieTimeStep.get()*1e-6 ...         
                         );
                     
                 case uint8(3)
                     % Rastor
                     [this.dVx, this.dVy, this.dVxCorrected, this.dVyCorrected, this.dTime] = ScannerCore.getRastor( ...
-                        this.uieRastorData.val(), ...
-                        this.uieRastorTransitTime.val(), ...
-                        this.uieTimeStep.val(), ... % send in us, not s
-                        this.uieVoltsScale.val(), ...
-                        this.uieFilterHz.val() ...
+                        this.uieRastorData.get(), ...
+                        this.uieRastorTransitTime.get(), ...
+                        this.uieTimeStep.get(), ... % send in us, not s
+                        this.uieVoltsScale.get(), ...
+                        this.uieFilterHz.get() ...
                         );
                     
                 case uint8(4)
                     % Saw
                     
-                    if this.uipSawTimeType.u8Selected == uint8(1)
+                    if this.uipSawTimeType.getSelectedIndex() == uint8(1)
                         % Period (ms)
-                        dHz = 1/(this.uieSawPeriod.val()/1e3);
+                        dHz = 1/(this.uieSawPeriod.get()/1e3);
                     else
                         % Hz
-                        dHz = this.uieSawHz.val();
+                        dHz = this.uieSawHz.get();
                     end
                     
                     st = ScannerCore.getSaw( ...
-                        this.uieSawSigX.val(), ...
-                        this.uieSawPhaseX.val(), ...
-                        this.uieSawOffsetX.val(), ...
-                        this.uieSawSigY.val(), ...
-                        this.uieSawPhaseY.val(), ...
-                        this.uieSawOffsetY.val(), ...
-                        this.uieVoltsScale.val(), ...
+                        this.uieSawSigX.get(), ...
+                        this.uieSawPhaseX.get(), ...
+                        this.uieSawOffsetX.get(), ...
+                        this.uieSawSigY.get(), ...
+                        this.uieSawPhaseY.get(), ...
+                        this.uieSawOffsetY.get(), ...
+                        this.uieVoltsScale.get(), ...
                         dHz, ...
-                        this.uieFilterHz.val(), ...
-                        this.uieTimeStep.val()*1e-6 ...
+                        this.uieFilterHz.get(), ...
+                        this.uieTimeStep.get()*1e-6 ...
                         );
                     
                     this.dVx = st.dX;
@@ -1079,16 +1279,16 @@ classdef ScannerControl < HandlePlus
                     % Serpentine
                                         
                     st = ScannerCore.getSerpentine2( ...
-                        this.uieSerpSigX.val(), ...
-                        this.uieSerpSigY.val(), ...
-                        this.uieSerpNumX.val(), ...
-                        this.uieSerpNumY.val(), ...
-                        this.uieSerpOffsetX.val(), ...
-                        this.uieSerpOffsetY.val(), ...
-                        this.uieSerpPeriod.val()*1e-3, ...
-                        this.uieVoltsScale.val(), ...
-                        this.uieFilterHz.val(), ...
-                        this.uieTimeStep.val()*1e-6 ...
+                        this.uieSerpSigX.get(), ...
+                        this.uieSerpSigY.get(), ...
+                        this.uieSerpNumX.get(), ...
+                        this.uieSerpNumY.get(), ...
+                        this.uieSerpOffsetX.get(), ...
+                        this.uieSerpOffsetY.get(), ...
+                        this.uieSerpPeriod.get()*1e-3, ...
+                        this.uieVoltsScale.get(), ...
+                        this.uieFilterHz.get(), ...
+                        this.uieTimeStep.get()*1e-6 ...
                         );
                     
                     this.dVx = st.dX;
@@ -1099,8 +1299,8 @@ classdef ScannerControl < HandlePlus
             
             
             
-            dVxRel = this.dVx / this.uieVoltsScale.val(); % values in [-1 : 1]
-            dVyRel = this.dVy / this.uieVoltsScale.val(); % values in [-1 : 1]
+            dVxRel = this.dVx / this.uieVoltsScale.get(); % values in [-1 : 1]
+            dVyRel = this.dVy / this.uieVoltsScale.get(); % values in [-1 : 1]
             
             % 2017.02.02
             % Adding correction factor for AOI.  The x direction receives
@@ -1130,8 +1330,8 @@ classdef ScannerControl < HandlePlus
                     this.hPreviewAxis2D, ...
                     this.dVx, this.dVy, 'b' ...
                 );
-                xlim(this.hPreviewAxis2D, [-this.uieVoltsScale.val() this.uieVoltsScale.val()])
-                ylim(this.hPreviewAxis2D, [-this.uieVoltsScale.val() this.uieVoltsScale.val()])
+                xlim(this.hPreviewAxis2D, [-this.uieVoltsScale.get() this.uieVoltsScale.get()])
+                ylim(this.hPreviewAxis2D, [-this.uieVoltsScale.get() this.uieVoltsScale.get()])
 
                 % set(this.hFigure, 'CurrentAxes', this.hPreviewAxis1D)
                 plot(...
@@ -1143,7 +1343,7 @@ classdef ScannerControl < HandlePlus
                 ylabel(this.hPreviewAxis1D, 'Volts')
                 legend(this.hPreviewAxis1D, 'vx','vy')
                 xlim(this.hPreviewAxis1D, [0 max(this.dTime*1000)])
-                ylim(this.hPreviewAxis1D, [-this.uieVoltsScale.val() this.uieVoltsScale.val()])
+                ylim(this.hPreviewAxis1D, [-this.uieVoltsScale.get() this.uieVoltsScale.get()])
             end
             
         end
@@ -1172,8 +1372,8 @@ classdef ScannerControl < HandlePlus
                     this.hMonitorAxis2D, ...
                     this.dRVxCommand, this.dRVyCommand, 'b' ...
                 );
-                xlim(this.hMonitorAxis2D, [-this.uieVoltsScale.val() this.uieVoltsScale.val()])
-                ylim(this.hMonitorAxis2D, [-this.uieVoltsScale.val() this.uieVoltsScale.val()])
+                xlim(this.hMonitorAxis2D, [-this.uieVoltsScale.get() this.uieVoltsScale.get()])
+                ylim(this.hMonitorAxis2D, [-this.uieVoltsScale.get() this.uieVoltsScale.get()])
                 legend(this.hMonitorAxis2D, 'sensor', 'command');
 
 %                 set(this.hFigure, 'CurrentAxes', this.hMonitorAxis1D)
@@ -1209,7 +1409,7 @@ classdef ScannerControl < HandlePlus
                 ylabel(this.hMonitorAxis1D, 'Volts')
                 legend(this.hMonitorAxis1D, 'vx sensor','vy sensor', 'vx command', 'vy command');
                 xlim(this.hMonitorAxis1D, [0 max(this.dRTime*1000)])
-                ylim(this.hMonitorAxis1D, [-this.uieVoltsScale.val() this.uieVoltsScale.val()])
+                ylim(this.hMonitorAxis1D, [-this.uieVoltsScale.get() this.uieVoltsScale.get()])
 
                 this.updatePupilImg('device');
                 
@@ -1219,48 +1419,48 @@ classdef ScannerControl < HandlePlus
         
         
         
-        function handleSave(this, src, evt)
+        function onSave(this, src, evt)
             
             
             % Generate a suggested name for save structure.  
             
-            switch this.uipType.u8Selected
+            switch this.uipType.getSelectedIndex()
                 case uint8(1)
                     
                     % Multi
                     
-                    switch this.uipMultiTimeType.u8Selected
+                    switch this.uipMultiTimeType.getSelectedIndex()
                         case uint8(1)
                             % Period
                             cName = sprintf('%1.0fPole_off%1.0f_rot%1.0f_min%1.0f_max%1.0f_num%1.0f_dwell%1.0f_xoff%1.0f_yoff%1.0f_per%1.0f_filthz%1.0f_dt%1.0f',...
-                                this.uieMultiPoleNum.val(), ...
-                                this.uieMultiOffset.val()*100, ...
-                                this.uieMultiRot.val(), ...
-                                this.uieMultiSigMin.val()*100, ...
-                                this.uieMultiSigMax.val()*100, ...
-                                this.uieMultiCirclesPerPole.val(), ...
-                                this.uieMultiDwell.val(), ...
-                                this.uieMultiXOffset.val()*100, ...
-                                this.uieMultiYOffset.val()*100, ...
-                                this.uieMultiPeriod.val(), ...
-                                this.uieFilterHz.val(), ...
-                                this.uieTimeStep.val() ...
+                                this.uieMultiPoleNum.get(), ...
+                                this.uieMultiOffset.get()*100, ...
+                                this.uieMultiRot.get(), ...
+                                this.uieMultiSigMin.get()*100, ...
+                                this.uieMultiSigMax.get()*100, ...
+                                this.uieMultiCirclesPerPole.get(), ...
+                                this.uieMultiDwell.get(), ...
+                                this.uieMultiXOffset.get()*100, ...
+                                this.uieMultiYOffset.get()*100, ...
+                                this.uieMultiPeriod.get(), ...
+                                this.uieFilterHz.get(), ...
+                                this.uieTimeStep.get() ...
                             );
                         case uint8(2)
                             % Freq
                             cName = sprintf('%1.0fPole_off%1.0f_rot%1.0f_min%1.0f_max%1.0f_num%1.0f_dwell%1.0f_xoff%1.0f_yoff%1.0f_hz%1.0f_filthz%1.0f_dt%1.0f',...
-                                this.uieMultiPoleNum.val(), ...
-                                this.uieMultiOffset.val()*100, ...
-                                this.uieMultiRot.val(), ...
-                                this.uieMultiSigMin.val()*100, ...
-                                this.uieMultiSigMax.val()*100, ...
-                                this.uieMultiCirclesPerPole.val(), ...
-                                this.uieMultiDwell.val(), ...
-                                this.uieMultiXOffset.val()*100, ...
-                                this.uieMultiYOffset.val()*100, ...
-                                this.uieMultiHz.val(), ...
-                                this.uieFilterHz.val(), ...
-                                this.uieTimeStep.val() ...
+                                this.uieMultiPoleNum.get(), ...
+                                this.uieMultiOffset.get()*100, ...
+                                this.uieMultiRot.get(), ...
+                                this.uieMultiSigMin.get()*100, ...
+                                this.uieMultiSigMax.get()*100, ...
+                                this.uieMultiCirclesPerPole.get(), ...
+                                this.uieMultiDwell.get(), ...
+                                this.uieMultiXOffset.get()*100, ...
+                                this.uieMultiYOffset.get()*100, ...
+                                this.uieMultiHz.get(), ...
+                                this.uieFilterHz.get(), ...
+                                this.uieTimeStep.get() ...
                             ); 
                     end
                     
@@ -1268,52 +1468,52 @@ classdef ScannerControl < HandlePlus
                     
                     % DC offset
                     cName = sprintf('DC_x%1.0f_y%1.0f_dt%1.0f', ...
-                        this.uieDCx.val()*100, ...
-                        this.uieDCy.val()*100, ...
-                        this.uieTimeStep.val() ...
+                        this.uieDCx.get()*100, ...
+                        this.uieDCy.get()*100, ...
+                        this.uieTimeStep.get() ...
                     );
                 
                 case uint8(3)
                     
                     % Rastor
                     cName = sprintf('Rastor_%s_ramp%1.0f_dt%1.0f', ...
-                        this.uieRastorData.val(), ...
-                        this.uieRastorTransitTime.val(), ...
-                        this.uieTimeStep.val() ...
+                        this.uieRastorData.get(), ...
+                        this.uieRastorTransitTime.get(), ...
+                        this.uieTimeStep.get() ...
                     );
                 
                 case uint8(4)
                     % Saw
-                    switch this.uipSawTimeType.u8Selected
+                    switch this.uipSawTimeType.getSelectedIndex()
                         case uint8(1)
                             % Period
                             cName = sprintf('Saw_sigx%1.0f_phasex%1.0f_offx%1.0f_sigy%1.0f_phasey%1.0f_offy%1.0f_scale%1.0f_per%1.0f_filthz%1.0f_dt%1.0f',...
-                                this.uieSawSigX.val()*100, ...
-                                this.uieSawPhaseX.val(), ...
-                                this.uieSawOffsetX.val()*100, ...
-                                this.uieSawSigY.val()*100, ...
-                                this.uieSawPhaseY.val(), ...
-                                this.uieSawOffsetY.val()*100, ...
-                                this.uieVoltsScale.val(), ...
-                                this.uieSawPeriod.val(), ...
-                                this.uieFilterHz.val(), ...
-                                this.uieTimeStep.val() ...
+                                this.uieSawSigX.get()*100, ...
+                                this.uieSawPhaseX.get(), ...
+                                this.uieSawOffsetX.get()*100, ...
+                                this.uieSawSigY.get()*100, ...
+                                this.uieSawPhaseY.get(), ...
+                                this.uieSawOffsetY.get()*100, ...
+                                this.uieVoltsScale.get(), ...
+                                this.uieSawPeriod.get(), ...
+                                this.uieFilterHz.get(), ...
+                                this.uieTimeStep.get() ...
                             );                           
                     
                         
                         case uint8(2)
                             % Period
                             cName = sprintf('Saw_sigx%1.0f_phasex%1.0f_offx%1.0f_sigy%1.0f_phasey%1.0f_offy%1.0f_scale%1.0f_hz%1.0f_filthz%1.0f_dt%1.0f',...
-                                this.uieSawSigX.val()*100, ...
-                                this.uieSawPhaseX.val(), ...
-                                this.uieSawOffsetX.val()*100, ...
-                                this.uieSawSigY.val()*100, ...
-                                this.uieSawPhaseY.val(), ...
-                                this.uieSawOffsetY.val()*100, ...
-                                this.uieVoltsScale.val(), ...
-                                this.uieSawHz.val(), ...
-                                this.uieFilterHz.val(), ...
-                                this.uieTimeStep.val() ...
+                                this.uieSawSigX.get()*100, ...
+                                this.uieSawPhaseX.get(), ...
+                                this.uieSawOffsetX.get()*100, ...
+                                this.uieSawSigY.get()*100, ...
+                                this.uieSawPhaseY.get(), ...
+                                this.uieSawOffsetY.get()*100, ...
+                                this.uieVoltsScale.get(), ...
+                                this.uieSawHz.get(), ...
+                                this.uieFilterHz.get(), ...
+                                this.uieTimeStep.get() ...
                             );   
                     end
                     
@@ -1321,16 +1521,16 @@ classdef ScannerControl < HandlePlus
                     
                     % Serpentine
                     cName = sprintf('Serpentine_sigx%1.0f_numx%1.0f_offx%1.0f_sigy%1.0f_numy%1.0f_offy%1.0f_scale%1.0f_per%1.0f_filthz%1.0f_dt%1.0f',...
-                        this.uieSerpSigX.val()*100, ...
-                        this.uieSerpNumX.val(), ...
-                        this.uieSerpOffsetX.val()*100, ...
-                        this.uieSerpSigY.val()*100, ...
-                        this.uieSerpNumY.val(), ...
-                        this.uieSerpOffsetY.val()*100, ...
-                        this.uieVoltsScale.val(), ...
-                        this.uieSerpPeriod.val(), ...
-                        this.uieFilterHz.val(), ...
-                        this.uieTimeStep.val() ...
+                        this.uieSerpSigX.get()*100, ...
+                        this.uieSerpNumX.get(), ...
+                        this.uieSerpOffsetX.get()*100, ...
+                        this.uieSerpSigY.get()*100, ...
+                        this.uieSerpNumY.get(), ...
+                        this.uieSerpOffsetY.get()*100, ...
+                        this.uieVoltsScale.get(), ...
+                        this.uieSerpPeriod.get(), ...
+                        this.uieFilterHz.get(), ...
+                        this.uieTimeStep.get() ...
                     );  
                      
             end
@@ -1378,23 +1578,12 @@ classdef ScannerControl < HandlePlus
                                     
             % Create a nested recursive structure of all public properties
             
-            s = this.saveClassInstance();
-            
-            
-            % Remove uilSaved from the structure.  We don't want to
-            % overwrite the list of available prescriptions when one is
-            % loaded
-            
-            s = rmfield(s, 'uilSaved');
-                        
-            % Save
-            
-            
+            s = this.save();
             
             save(fullfile(this.cDirWaveforms, cFileName), 's');
             
             % If the name is not already on the list, append it
-            if isempty(strmatch(cFileName, this.uilSaved.ceOptions, 'exact'))
+            if isempty(strmatch(cFileName, this.uilSaved.getOptions(), 'exact'))
                 this.uilSaved.append(cFileName);
             end
             
@@ -1405,8 +1594,6 @@ classdef ScannerControl < HandlePlus
         end
         
         function saveAsciiFiles(this)
-            
-            
             
             % Save ascii files for nPoint software.  Make sure the time
             % step is 24 us.  This is the control loop clock so it will
@@ -1431,7 +1618,7 @@ classdef ScannerControl < HandlePlus
                 'pupilfill_ascii' ...
             );
         
-            this.checkDir(cDirSaveAscii);
+            mic.Utils.checkDir(cDirSaveAscii);
                         
             % Save
             
@@ -1467,16 +1654,16 @@ classdef ScannerControl < HandlePlus
                 'Units', 'pixels',...
                 'Title', 'Build Waveform',...
                 'Clipping', 'on',...
-                'Position', MicUtils.lt2lb([10 10 210 700], this.hFigure) ...
+                'Position', mic.Utils.lt2lb([10 10 210 700], this.hFigure) ...
             );
             drawnow;
 
 
             % Popup (to select type)
-            this.uipType.build(this.hWaveformPanel, dLeftCol1, dTop, 190, MicUtils.dEDITHEIGHT);
+            this.uipType.build(this.hWaveformPanel, dLeftCol1, dTop, 190, mic.Utils.dEDITHEIGHT);
 
             % Build the sub-panel based on popup type 
-            switch this.uipType.u8Selected
+            switch this.uipType.getSelectedIndex()
                 case uint8(1)
                     % Multi
                     this.buildWaveformMultiPanel();
@@ -1501,10 +1688,10 @@ classdef ScannerControl < HandlePlus
 
             % Preview and save buttons
             dTop = 630;
-            this.uibPreview.build(this.hWaveformPanel, dLeftCol1, dTop, 190, MicUtils.dEDITHEIGHT);
+            this.uibPreview.build(this.hWaveformPanel, dLeftCol1, dTop, 190, mic.Utils.dEDITHEIGHT);
             dTop = dTop + 30;
 
-            this.uibSave.build(this.hWaveformPanel, dLeftCol1, dTop, 190, MicUtils.dEDITHEIGHT);
+            this.uibSave.build(this.hWaveformPanel, dLeftCol1, dTop, 190, mic.Utils.dEDITHEIGHT);
             dTop = dTop + dSep;
                 
             
@@ -1529,18 +1716,18 @@ classdef ScannerControl < HandlePlus
                 'Units', 'pixels',...
                 'Title', 'General',...
                 'Clipping', 'on',...
-                'Position', MicUtils.lt2lb([10 490 190 130], this.hWaveformPanel) ...
+                'Position', mic.Utils.lt2lb([10 490 190 130], this.hWaveformPanel) ...
             );
             drawnow;
 
             % Build filter Hz, Volts scale and time step
 
-            this.uieFilterHz.build(this.hWaveformGeneralPanel, dLeftCol1, dTop, dEditWidth, MicUtils.dEDITHEIGHT);            
-            this.uieVoltsScale.build(this.hWaveformGeneralPanel, dLeftCol2, dTop, dEditWidth, MicUtils.dEDITHEIGHT);
+            this.uieFilterHz.build(this.hWaveformGeneralPanel, dLeftCol1, dTop, dEditWidth, mic.Utils.dEDITHEIGHT);            
+            this.uieVoltsScale.build(this.hWaveformGeneralPanel, dLeftCol2, dTop, dEditWidth, mic.Utils.dEDITHEIGHT);
             dTop = dTop + dSep;
 
-            this.uieTimeStep.build(this.hWaveformGeneralPanel, dLeftCol1, dTop, dEditWidth, MicUtils.dEDITHEIGHT);
-            this.uieConvKernelSig.build(this.hWaveformGeneralPanel, dLeftCol2, dTop, dEditWidth, MicUtils.dEDITHEIGHT);
+            this.uieTimeStep.build(this.hWaveformGeneralPanel, dLeftCol1, dTop, dEditWidth, mic.Utils.dEDITHEIGHT);
+            this.uieConvKernelSig.build(this.hWaveformGeneralPanel, dLeftCol2, dTop, dEditWidth, mic.Utils.dEDITHEIGHT);
 
             dTop = dTop + dSep; 
                             
@@ -1565,41 +1752,41 @@ classdef ScannerControl < HandlePlus
                 'Units', 'pixels',...
                 'Title', 'Multipole configuration',...
                 'Clipping', 'on',...
-                'Position', MicUtils.lt2lb([10 65 190 420], this.hWaveformPanel) ...
+                'Position', mic.Utils.lt2lb([10 65 190 420], this.hWaveformPanel) ...
             );
             drawnow;
 
-            this.uieMultiPoleNum.build(this.hWaveformMultiPanel, dLeftCol1, dTop, dEditWidth, MicUtils.dEDITHEIGHT);
-            this.uieMultiTransitTime.build(this.hWaveformMultiPanel, dLeftCol2, dTop, dEditWidth, MicUtils.dEDITHEIGHT);            
+            this.uieMultiPoleNum.build(this.hWaveformMultiPanel, dLeftCol1, dTop, dEditWidth, mic.Utils.dEDITHEIGHT);
+            this.uieMultiTransitTime.build(this.hWaveformMultiPanel, dLeftCol2, dTop, dEditWidth, mic.Utils.dEDITHEIGHT);            
 
 
             dTop = dTop + dSep;
 
-            this.uieMultiSigMin.build(this.hWaveformMultiPanel, dLeftCol1, dTop, dEditWidth, MicUtils.dEDITHEIGHT);
-            this.uieMultiSigMax.build(this.hWaveformMultiPanel, dLeftCol2, dTop, dEditWidth, MicUtils.dEDITHEIGHT);
+            this.uieMultiSigMin.build(this.hWaveformMultiPanel, dLeftCol1, dTop, dEditWidth, mic.Utils.dEDITHEIGHT);
+            this.uieMultiSigMax.build(this.hWaveformMultiPanel, dLeftCol2, dTop, dEditWidth, mic.Utils.dEDITHEIGHT);
             dTop = dTop + dSep;
 
-            this.uieMultiCirclesPerPole.build(this.hWaveformMultiPanel, dLeftCol1, dTop, dEditWidth, MicUtils.dEDITHEIGHT);
-            this.uieMultiDwell.build(this.hWaveformMultiPanel, dLeftCol2, dTop, dEditWidth, MicUtils.dEDITHEIGHT);
+            this.uieMultiCirclesPerPole.build(this.hWaveformMultiPanel, dLeftCol1, dTop, dEditWidth, mic.Utils.dEDITHEIGHT);
+            this.uieMultiDwell.build(this.hWaveformMultiPanel, dLeftCol2, dTop, dEditWidth, mic.Utils.dEDITHEIGHT);
             dTop = dTop + dSep;
 
-            this.uieMultiOffset.build(this.hWaveformMultiPanel, dLeftCol1, dTop, dEditWidth, MicUtils.dEDITHEIGHT);
-            this.uieMultiRot.build(this.hWaveformMultiPanel, dLeftCol2, dTop, dEditWidth, MicUtils.dEDITHEIGHT);
+            this.uieMultiOffset.build(this.hWaveformMultiPanel, dLeftCol1, dTop, dEditWidth, mic.Utils.dEDITHEIGHT);
+            this.uieMultiRot.build(this.hWaveformMultiPanel, dLeftCol2, dTop, dEditWidth, mic.Utils.dEDITHEIGHT);
             dTop = dTop + dSep;
 
-            this.uieMultiXOffset.build(this.hWaveformMultiPanel, dLeftCol1, dTop, dEditWidth, MicUtils.dEDITHEIGHT);
-            this.uieMultiYOffset.build(this.hWaveformMultiPanel, dLeftCol2, dTop, dEditWidth, MicUtils.dEDITHEIGHT);
+            this.uieMultiXOffset.build(this.hWaveformMultiPanel, dLeftCol1, dTop, dEditWidth, mic.Utils.dEDITHEIGHT);
+            this.uieMultiYOffset.build(this.hWaveformMultiPanel, dLeftCol2, dTop, dEditWidth, mic.Utils.dEDITHEIGHT);
             dTop = dTop + dSep;
 
             % Popup (to select type)
-            this.uipMultiTimeType.build(this.hWaveformMultiPanel, dLeftCol1, dTop, 170, MicUtils.dEDITHEIGHT);
+            this.uipMultiTimeType.build(this.hWaveformMultiPanel, dLeftCol1, dTop, 170, mic.Utils.dEDITHEIGHT);
             dTop = dTop + 45;
 
-            this.uieMultiPeriod.build(this.hWaveformMultiPanel, dLeftCol1, dTop, dEditWidth, MicUtils.dEDITHEIGHT);
-            this.uieMultiHz.build(this.hWaveformMultiPanel, dLeftCol1, dTop, dEditWidth, MicUtils.dEDITHEIGHT);                
+            this.uieMultiPeriod.build(this.hWaveformMultiPanel, dLeftCol1, dTop, dEditWidth, mic.Utils.dEDITHEIGHT);
+            this.uieMultiHz.build(this.hWaveformMultiPanel, dLeftCol1, dTop, dEditWidth, mic.Utils.dEDITHEIGHT);                
 
             % Call handler for multitimetype to make active type visible
-            this.handleMultiTimeType();
+            this.onMultiTimeTypeChange();
             dTop = dTop + 45;
 
             this.uitMultiFreqRange.build(this.hWaveformMultiPanel, dLeftCol1, dTop, 170, 30);
@@ -1628,13 +1815,13 @@ classdef ScannerControl < HandlePlus
                 'Units', 'pixels',...
                 'Title', 'DC configuration',...
                 'Clipping', 'on',...
-                'Position', MicUtils.lt2lb([10 65 190 80], this.hWaveformPanel) ...
+                'Position', mic.Utils.lt2lb([10 65 190 80], this.hWaveformPanel) ...
             );
             drawnow;
 
 
-            this.uieDCx.build(this.hWaveformDCPanel, dLeftCol1, dTop, dEditWidth, MicUtils.dEDITHEIGHT);            
-            this.uieDCy.build(this.hWaveformDCPanel, dLeftCol2, dTop, dEditWidth, MicUtils.dEDITHEIGHT);
+            this.uieDCx.build(this.hWaveformDCPanel, dLeftCol1, dTop, dEditWidth, mic.Utils.dEDITHEIGHT);            
+            this.uieDCy.build(this.hWaveformDCPanel, dLeftCol2, dTop, dEditWidth, mic.Utils.dEDITHEIGHT);
 
             drawnow;
 
@@ -1659,15 +1846,15 @@ classdef ScannerControl < HandlePlus
                 'Units', 'pixels',...
                 'Title', 'Rastor configuration',...
                 'Clipping', 'on',...
-                'Position', MicUtils.lt2lb([10 65 190 130], this.hWaveformPanel) ...
+                'Position', mic.Utils.lt2lb([10 65 190 130], this.hWaveformPanel) ...
             );
             drawnow;
 
 
-            this.uieRastorData.build(this.hWaveformRastorPanel, dLeftCol1, dTop, 170, MicUtils.dEDITHEIGHT); 
+            this.uieRastorData.build(this.hWaveformRastorPanel, dLeftCol1, dTop, 170, mic.Utils.dEDITHEIGHT); 
             dTop = dTop + dSep;     
 
-            this.uieRastorTransitTime.build(this.hWaveformRastorPanel, dLeftCol1, dTop, dEditWidth, MicUtils.dEDITHEIGHT);
+            this.uieRastorTransitTime.build(this.hWaveformRastorPanel, dLeftCol1, dTop, dEditWidth, mic.Utils.dEDITHEIGHT);
 
             drawnow;
                         
@@ -1690,32 +1877,32 @@ classdef ScannerControl < HandlePlus
                 'Units', 'pixels',...
                 'Title', 'Triangle configuration',...
                 'Clipping', 'on',...
-                'Position', MicUtils.lt2lb([10 65 190 300], this.hWaveformPanel) ...
+                'Position', mic.Utils.lt2lb([10 65 190 300], this.hWaveformPanel) ...
             );
             drawnow;
 
-            this.uieSawSigX.build(this.hWaveformSawPanel, dLeftCol1, dTop, dEditWidth, MicUtils.dEDITHEIGHT);
-            this.uieSawSigY.build(this.hWaveformSawPanel, dLeftCol2, dTop, dEditWidth, MicUtils.dEDITHEIGHT);            
+            this.uieSawSigX.build(this.hWaveformSawPanel, dLeftCol1, dTop, dEditWidth, mic.Utils.dEDITHEIGHT);
+            this.uieSawSigY.build(this.hWaveformSawPanel, dLeftCol2, dTop, dEditWidth, mic.Utils.dEDITHEIGHT);            
 
             dTop = dTop + dSep;
 
-            this.uieSawPhaseX.build(this.hWaveformSawPanel, dLeftCol1, dTop, dEditWidth, MicUtils.dEDITHEIGHT);
-            this.uieSawPhaseY.build(this.hWaveformSawPanel, dLeftCol2, dTop, dEditWidth, MicUtils.dEDITHEIGHT);            
+            this.uieSawPhaseX.build(this.hWaveformSawPanel, dLeftCol1, dTop, dEditWidth, mic.Utils.dEDITHEIGHT);
+            this.uieSawPhaseY.build(this.hWaveformSawPanel, dLeftCol2, dTop, dEditWidth, mic.Utils.dEDITHEIGHT);            
 
             dTop = dTop + dSep;
 
-            this.uieSawOffsetX.build(this.hWaveformSawPanel, dLeftCol1, dTop, dEditWidth, MicUtils.dEDITHEIGHT);
-            this.uieSawOffsetY.build(this.hWaveformSawPanel, dLeftCol2, dTop, dEditWidth, MicUtils.dEDITHEIGHT);            
+            this.uieSawOffsetX.build(this.hWaveformSawPanel, dLeftCol1, dTop, dEditWidth, mic.Utils.dEDITHEIGHT);
+            this.uieSawOffsetY.build(this.hWaveformSawPanel, dLeftCol2, dTop, dEditWidth, mic.Utils.dEDITHEIGHT);            
 
             dTop = dTop + dSep;
 
-            this.uipSawTimeType.build(this.hWaveformSawPanel, dLeftCol1, dTop, 170, MicUtils.dEDITHEIGHT);
+            this.uipSawTimeType.build(this.hWaveformSawPanel, dLeftCol1, dTop, 170, mic.Utils.dEDITHEIGHT);
 
             dTop = dTop + 45;
 
-            this.uieSawPeriod.build(this.hWaveformSawPanel, dLeftCol1, dTop, dEditWidth, MicUtils.dEDITHEIGHT);
-            this.uieSawHz.build(this.hWaveformSawPanel, dLeftCol1, dTop, dEditWidth, MicUtils.dEDITHEIGHT);                
-            this.handleSawTimeType(); % Call handler for multitimetype to make active type visible
+            this.uieSawPeriod.build(this.hWaveformSawPanel, dLeftCol1, dTop, dEditWidth, mic.Utils.dEDITHEIGHT);
+            this.uieSawHz.build(this.hWaveformSawPanel, dLeftCol1, dTop, dEditWidth, mic.Utils.dEDITHEIGHT);                
+            this.onSawTimeTypeChange(); % Call handler for multitimetype to make active type visible
 
             drawnow;
             
@@ -1739,26 +1926,26 @@ classdef ScannerControl < HandlePlus
                 'Units', 'pixels',...
                 'Title', 'Serpentine config',...
                 'Clipping', 'on',...
-                'Position', MicUtils.lt2lb([10 65 190 300], this.hWaveformPanel) ...
+                'Position', mic.Utils.lt2lb([10 65 190 300], this.hWaveformPanel) ...
             );
             drawnow;
 
-            this.uieSerpSigX.build(this.hWaveformSerpPanel, dLeftCol1, dTop, dEditWidth, MicUtils.dEDITHEIGHT);
-            this.uieSerpSigY.build(this.hWaveformSerpPanel, dLeftCol2, dTop, dEditWidth, MicUtils.dEDITHEIGHT);            
+            this.uieSerpSigX.build(this.hWaveformSerpPanel, dLeftCol1, dTop, dEditWidth, mic.Utils.dEDITHEIGHT);
+            this.uieSerpSigY.build(this.hWaveformSerpPanel, dLeftCol2, dTop, dEditWidth, mic.Utils.dEDITHEIGHT);            
 
             dTop = dTop + dSep;
 
-            this.uieSerpNumX.build(this.hWaveformSerpPanel, dLeftCol1, dTop, dEditWidth, MicUtils.dEDITHEIGHT);
-            this.uieSerpNumY.build(this.hWaveformSerpPanel, dLeftCol2, dTop, dEditWidth, MicUtils.dEDITHEIGHT);            
+            this.uieSerpNumX.build(this.hWaveformSerpPanel, dLeftCol1, dTop, dEditWidth, mic.Utils.dEDITHEIGHT);
+            this.uieSerpNumY.build(this.hWaveformSerpPanel, dLeftCol2, dTop, dEditWidth, mic.Utils.dEDITHEIGHT);            
 
             dTop = dTop + dSep;
 
-            this.uieSerpOffsetX.build(this.hWaveformSerpPanel, dLeftCol1, dTop, dEditWidth, MicUtils.dEDITHEIGHT);
-            this.uieSerpOffsetY.build(this.hWaveformSerpPanel, dLeftCol2, dTop, dEditWidth, MicUtils.dEDITHEIGHT);            
+            this.uieSerpOffsetX.build(this.hWaveformSerpPanel, dLeftCol1, dTop, dEditWidth, mic.Utils.dEDITHEIGHT);
+            this.uieSerpOffsetY.build(this.hWaveformSerpPanel, dLeftCol2, dTop, dEditWidth, mic.Utils.dEDITHEIGHT);            
 
             dTop = dTop + dSep;
 
-            this.uieSerpPeriod.build(this.hWaveformSerpPanel, dLeftCol1, dTop, dEditWidth, MicUtils.dEDITHEIGHT);
+            this.uieSerpPeriod.build(this.hWaveformSerpPanel, dLeftCol1, dTop, dEditWidth, mic.Utils.dEDITHEIGHT);
 
             drawnow;
             
@@ -1778,7 +1965,7 @@ classdef ScannerControl < HandlePlus
                 'Units', 'pixels',...
                 'Title', 'Saved Waveforms',...
                 'Clipping', 'on',...
-                'Position', MicUtils.lt2lb([230 this.dYOffset dWidth 350], this.hFigure) ...
+                'Position', mic.Utils.lt2lb([230 this.dYOffset dWidth 350], this.hFigure) ...
             );
             drawnow;
 
@@ -1792,7 +1979,7 @@ classdef ScannerControl < HandlePlus
                 dLeft, ... % l
                 dTop, ... % t
                 dButtonWidth, ... % w
-                MicUtils.dEDITHEIGHT ... % h
+                mic.Utils.dEDITHEIGHT ... % h
             );
             dLeft = dLeft + dButtonWidth + 10;
             
@@ -1800,7 +1987,7 @@ classdef ScannerControl < HandlePlus
                 dLeft, ... % l
                 dTop, ... % t
                 dButtonWidth, ... % w
-                MicUtils.dEDITHEIGHT ... % h
+                mic.Utils.dEDITHEIGHT ... % h
             );
             dLeft = dLeft + dButtonWidth + 10;
             
@@ -1809,7 +1996,7 @@ classdef ScannerControl < HandlePlus
                 dLeft, ... % l
                 dTop, ... % t
                 dButtonWidth, ... % w
-                MicUtils.dEDITHEIGHT ... % h
+                mic.Utils.dEDITHEIGHT ... % h
             );
             dLeft = dLeft + dButtonWidth + 10;
             
@@ -1835,15 +2022,15 @@ classdef ScannerControl < HandlePlus
                 'Units', 'pixels',...
                 'Title', 'Plot',...
                 'Clipping', 'on',...
-                'Position', MicUtils.lt2lb([230 10 this.dWidthPlotPanel 340], this.hFigure) ...
+                'Position', mic.Utils.lt2lb([230 10 this.dWidthPlotPanel 340], this.hFigure) ...
             );
             drawnow; 
 
             % Popup (to select type)
-            this.uipPlotType.build(this.hPlotPanel, 10, 20, 190, MicUtils.dEDITHEIGHT);
+            this.uipPlotType.build(this.hPlotPanel, 10, 20, 190, mic.Utils.dEDITHEIGHT);
 
             % Call handler for popup to build type
-            this.handlePlotType();
+            this.onPlotTypeChange();
             
         end
         
@@ -1862,14 +2049,14 @@ classdef ScannerControl < HandlePlus
                 'Title', '',...
                 'Clipping', 'on',...
                 'BorderType', 'none', ...
-                'Position', MicUtils.lt2lb([2 65 990-6 280], this.hPlotPanel) ...
+                'Position', mic.Utils.lt2lb([2 65 990-6 280], this.hPlotPanel) ...
             );
             drawnow;            
 
             this.hPreviewAxis1D = axes(...
                 'Parent', this.hPlotPreviewPanel,...
                 'Units', 'pixels',...
-                'Position',MicUtils.lt2lb([dPad 5 dSize*2 dSize], this.hPlotPreviewPanel),...
+                'Position',mic.Utils.lt2lb([dPad 5 dSize*2 dSize], this.hPlotPreviewPanel),...
                 'XColor', [0 0 0],...
                 'YColor', [0 0 0],...
                 'HandleVisibility','on'...
@@ -1878,7 +2065,7 @@ classdef ScannerControl < HandlePlus
             this.hPreviewAxis2D = axes(...
                 'Parent', this.hPlotPreviewPanel,...
                 'Units', 'pixels',...
-                'Position',MicUtils.lt2lb([2*(dPad+dSize) 5 dSize dSize], this.hPlotPreviewPanel),...
+                'Position',mic.Utils.lt2lb([2*(dPad+dSize) 5 dSize dSize], this.hPlotPreviewPanel),...
                 'XColor', [0 0 0],...
                 'YColor', [0 0 0],...
                 'DataAspectRatio',[1 1 1],...
@@ -1888,7 +2075,7 @@ classdef ScannerControl < HandlePlus
             this.hPreviewAxis2DSim = axes(...
                 'Parent', this.hPlotPreviewPanel,...
                 'Units', 'pixels',...
-                'Position',MicUtils.lt2lb([3*(dSize+dPad) 5 dSize dSize], this.hPlotPreviewPanel),...
+                'Position',mic.Utils.lt2lb([3*(dSize+dPad) 5 dSize dSize], this.hPlotPreviewPanel),...
                 'XColor', [0 0 0],...
                 'YColor', [0 0 0],...
                 'DataAspectRatio',[1 1 1],...
@@ -1919,7 +2106,7 @@ classdef ScannerControl < HandlePlus
                 'Title', '',...
                 'Clipping', 'on',...
                 'BorderType', 'none', ...
-                'Position', MicUtils.lt2lb([2 65 990-6 280], this.hPlotPanel) ...
+                'Position', mic.Utils.lt2lb([2 65 990-6 280], this.hPlotPanel) ...
             );
             drawnow;
 
@@ -1927,7 +2114,7 @@ classdef ScannerControl < HandlePlus
             this.hMonitorAxis1D = axes(...
                 'Parent', this.hPlotMonitorPanel,...
                 'Units', 'pixels',...
-                'Position',MicUtils.lt2lb([dPad 5 dSize*2 dSize], this.hPlotMonitorPanel),...
+                'Position',mic.Utils.lt2lb([dPad 5 dSize*2 dSize], this.hPlotMonitorPanel),...
                 'XColor', [0 0 0],...
                 'YColor', [0 0 0],...
                 'HandleVisibility','on'...
@@ -1936,7 +2123,7 @@ classdef ScannerControl < HandlePlus
             this.hMonitorAxis2D = axes(...
                 'Parent', this.hPlotMonitorPanel,...
                 'Units', 'pixels',...
-                'Position',MicUtils.lt2lb([2*(dPad+dSize) 5 dSize dSize], this.hPlotMonitorPanel),...
+                'Position',mic.Utils.lt2lb([2*(dPad+dSize) 5 dSize dSize], this.hPlotMonitorPanel),...
                 'XColor', [0 0 0],...
                 'YColor', [0 0 0],...
                 'DataAspectRatio',[1 1 1],...
@@ -1946,7 +2133,7 @@ classdef ScannerControl < HandlePlus
             this.hMonitorAxis2DSim = axes(...
                 'Parent', this.hPlotMonitorPanel,...
                 'Units', 'pixels',...
-                'Position',MicUtils.lt2lb([3*(dSize+dPad) 5 dSize dSize], this.hPlotMonitorPanel),...
+                'Position',mic.Utils.lt2lb([3*(dSize+dPad) 5 dSize dSize], this.hPlotMonitorPanel),...
                 'XColor', [0 0 0],...
                 'YColor', [0 0 0],...
                 'DataAspectRatio',[1 1 1],...
@@ -1976,44 +2163,33 @@ classdef ScannerControl < HandlePlus
                 'Title', '',...
                 'Clipping', 'on',...
                 'BorderType', 'none', ...
-                'Position', MicUtils.lt2lb([210 25 200 40], this.hPlotPanel) ...
+                'Position', mic.Utils.lt2lb([210 25 200 40], this.hPlotPanel) ...
             );
             drawnow;
 
             % Button
-            this.uibRecord.build(this.hPlotRecordPanel, 0, 0, 100, MicUtils.dEDITHEIGHT);
+            this.uibRecord.build(this.hPlotRecordPanel, 0, 0, 100, mic.Utils.dEDITHEIGHT);
 
             % Time
-            this.uieRecordTime.build(this.hPlotRecordPanel, 105, 0, 40, MicUtils.dEDITHEIGHT);
+            this.uieRecordTime.build(this.hPlotRecordPanel, 105, 0, 40, mic.Utils.dEDITHEIGHT);
 
             % "ms"
-            uitLabel = UIText('ms');
-            uitLabel.build(this.hPlotRecordPanel, 150, 8, 30, MicUtils.dEDITHEIGHT);
+            uitLabel = mic.ui.common.Text('cVal', 'ms');
+            uitLabel.build(this.hPlotRecordPanel, 150, 8, 30, mic.Utils.dEDITHEIGHT);
 
             % this.uibRecord.hide();
             % this.uieRecordTime.hide();
             
         end
                 
-        function cb(this, src, evt)
-            
-            switch src
-                case this.hFigure
-                    this.closeRequestFcn();
-                    
-            end
-            
-        end
         
         
         
         
-        function closeRequestFcn(this)
+        
+        function onCloseRequest(this, src, evt)
             delete(this.hFigure);
-            this.saveState();
-            
-            
-            
+            this.saveState(); 
         end
         
         
@@ -2054,7 +2230,7 @@ classdef ScannerControl < HandlePlus
             % computing the pixel because of the way matlab does y
             % coordinates in an image plot
 
-            dVoltsAtEdge = this.dPupilScale*this.uieVoltsScale.val();
+            dVoltsAtEdge = this.dPupilScale*this.uieVoltsScale.get();
 
             
             % dVxPixel {double 1 x length(dVx)}
@@ -2144,8 +2320,8 @@ classdef ScannerControl < HandlePlus
                     'Parent', this.hSerpentineWaveformAxes ...
                 );
                 axis(this.hSerpentineWaveformAxes, 'image')
-                xlim(this.hSerpentineWaveformAxes, [-this.uieVoltsScale.val() this.uieVoltsScale.val()]*dMmPerVolts)
-                ylim(this.hSerpentineWaveformAxes, [-this.uieVoltsScale.val() this.uieVoltsScale.val()]*dMmPerVolts)
+                xlim(this.hSerpentineWaveformAxes, [-this.uieVoltsScale.get() this.uieVoltsScale.get()]*dMmPerVolts)
+                ylim(this.hSerpentineWaveformAxes, [-this.uieVoltsScale.get() this.uieVoltsScale.get()]*dMmPerVolts)
                 xlabel(this.hSerpentineWaveformAxes, 'x (mm)');
                 ylabel(this.hSerpentineWaveformAxes, 'y (mm)');
                 
@@ -2235,8 +2411,8 @@ classdef ScannerControl < HandlePlus
                 % 2016.03.02 plot the derivative of the voltage w.r.t to
                 % time and multiply by the capicatance to get the current
                 
-                ddVxdT = derivative(this.dVx, this.uieTimeStep.val()*1e-6);
-                ddVydT = derivative(this.dVy, this.uieTimeStep.val()*1e-6);
+                ddVxdT = derivative(this.dVx, this.uieTimeStep.get()*1e-6);
+                ddVydT = derivative(this.dVy, this.uieTimeStep.get()*1e-6);
                 
                 dC = 2e-6; % advertised
                 dC_scale_factor = 300/113;
@@ -2326,7 +2502,7 @@ classdef ScannerControl < HandlePlus
             
         end
         
-        function handleSavedDelete(this, src, evt)
+        function onListChangeDelete(this, src, evt)
            
             % In this case, evt is an instance of EventWithData (custom
             % class that extends event.EventData) that has a property
@@ -2359,20 +2535,20 @@ classdef ScannerControl < HandlePlus
 
         end
         
-        function handleSaved(this, src, evt)
+        function onListChange(this, src, evt)
             
                         
             % Make sure preview is showing
             
-            if this.uipPlotType.u8Selected ~= uint8(1)
-                this.uipPlotType.u8Selected = uint8(1);
+            if this.uipPlotType.getSelectedIndex() ~= uint8(1)
+                this.uipPlotType.setSelectedIndex(uint8(1));
             end
             
             
             % Load the .mat file
+            ceSelected = this.uilSaved.get();
             
-            
-            if ~isempty(this.uilSaved.ceSelected)
+            if ~isempty(ceSelected)
                 
                 % ceSelected is a cell of selected options - use the first
                 % one.  Populates a structure named s in the local
@@ -2380,7 +2556,7 @@ classdef ScannerControl < HandlePlus
                 
                 cFile = fullfile( ...
                     this.cDirWaveforms, ...
-                    this.uilSaved.ceSelected{1} ...
+                    ceSelected{1} ...
                 );
             
                 
@@ -2388,14 +2564,17 @@ classdef ScannerControl < HandlePlus
                 
                     load(cFile); % populates structure s in local workspace
 
-                    this.loadClassInstance(s);
+                    this.load(s);
                     
                     % When dVx, dVy, etc. are private
-                    % this.handlePreview();  
+                    this.onPreview();  
                     
                     % When dVx, dVy, etc. are public
+                    
+                    %{
                     this.updateAxes();
                     this.updatePupilImg('preview');
+                    %}
                     
                 else
                     
@@ -2434,7 +2613,7 @@ classdef ScannerControl < HandlePlus
                     'Units', 'pixels',...
                     'Title', 'Camera overlay with sigma annular lines',...
                     'Clipping', 'on',...
-                    'Position', MicUtils.lt2lb([720 this.dYOffset 400 350], this.hFigure) ...
+                    'Position', mic.Utils.lt2lb([720 this.dYOffset 400 350], this.hFigure) ...
                 );
                 drawnow;
             end
@@ -2445,7 +2624,7 @@ classdef ScannerControl < HandlePlus
             
             % Compute number of samples from uieRecordTime
             
-            dSeconds = this.uieRecordTime.val() * 1e-3; % s
+            dSeconds = this.uieRecordTime.get() * 1e-3; % s
             dClockPeriod = 24e-6;
             u32Num = uint32(round(dSeconds / dClockPeriod));
             
@@ -2459,10 +2638,10 @@ classdef ScannerControl < HandlePlus
             dTime = double(1 : u32Num) * dClockPeriod;
             
             
-            this.dRVxCommand =      dResult(1, :) * this.uieVoltsScale.val(); % * cos(this.dThetaX * pi / 180);
-            this.dRVxSensor =       dResult(2, :) * this.uieVoltsScale.val(); % * cos(this.dThetaX * pi / 180);
-            this.dRVyCommand =      dResult(3, :) * this.uieVoltsScale.val(); % * cos(this.dThetaY * pi / 180);
-            this.dRVySensor =       dResult(4, :) * this.uieVoltsScale.val(); % * cos(this.dThetaY * pi / 180);
+            this.dRVxCommand =      dResult(1, :) * this.uieVoltsScale.get(); % * cos(this.dThetaX * pi / 180);
+            this.dRVxSensor =       dResult(2, :) * this.uieVoltsScale.get(); % * cos(this.dThetaX * pi / 180);
+            this.dRVyCommand =      dResult(3, :) * this.uieVoltsScale.get(); % * cos(this.dThetaY * pi / 180);
+            this.dRVySensor =       dResult(4, :) * this.uieVoltsScale.get(); % * cos(this.dThetaY * pi / 180);
             this.dRTime =           dTime;
             
             
@@ -2543,11 +2722,11 @@ classdef ScannerControl < HandlePlus
             
         end
         
-        function ceReturn = refreshSaved(this)
+        function ceReturn = onListRefresh(this)
             
             % Get path to the save directory
             
-            ceReturn = MicUtils.dir2cell(this.cDirWaveforms, 'date', 'descend');
+            ceReturn = mic.Utils.dir2cell(this.cDirWaveforms, 'date', 'descend', '*.mat');
                         
         end
         
@@ -2558,13 +2737,13 @@ classdef ScannerControl < HandlePlus
             
             dKernelSig = 0.02; % Using uie now.
             
-            dKernelSigPixels = this.uieConvKernelSig.val()*this.dPupilPixels/this.dPupilScale/2;
+            dKernelSigPixels = this.uieConvKernelSig.get()*this.dPupilPixels/this.dPupilScale/2;
             dKernelPixels = floor(dKernelSigPixels*2*4); % the extra factor of 2 is for oversize padding
             [dX, dY] = this.getXY(dKernelPixels, dKernelPixels, dKernelPixels, dKernelPixels);
             dKernelInt = this.gauss(dX, dKernelSigPixels, dY, dKernelSigPixels);
                         
             [dX, dY] = this.getXY(this.dPreviewPixels, this.dPreviewPixels, 2*this.dPreviewScale, 2*this.dPreviewScale);
-            dKernelInt = this.gauss(dX, this.uieConvKernelSig.val(), dY, this.uieConvKernelSig.val());
+            dKernelInt = this.gauss(dX, this.uieConvKernelSig.get(), dY, this.uieConvKernelSig.get());
             
             
             if this.lSerpentineDebug
@@ -2583,9 +2762,9 @@ classdef ScannerControl < HandlePlus
                 for n = 1:dTrials
                     dKernelInt = dKernelInt + dMag(n)*this.gauss(...
                         dX - dX0(n), ...
-                        this.uieConvKernelSig.val(), ...
+                        this.uieConvKernelSig.get(), ...
                         dY - dY0(n), ...
-                        this.uieConvKernelSig.val());
+                        this.uieConvKernelSig.get());
                 end
 
 
