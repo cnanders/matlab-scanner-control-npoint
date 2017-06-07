@@ -29,6 +29,7 @@ classdef ScannerControl < mic.Base
         dThetaX = 45; % deg
         dThetaY = 0;
         
+        dHeightEdit = 24;
     end
     
     properties (Access = private)
@@ -103,8 +104,7 @@ classdef ScannerControl < mic.Base
         dVxCorrected
         dVyCorrected
         dTime
-        i32X
-        i32Y
+
         
         % Storage for record plot
         dRVxCommand
@@ -215,13 +215,20 @@ classdef ScannerControl < mic.Base
             csvwrite('data.csv', m);
         end
         
-        % Write i32X, i32Y to text file
+        % Write x, y values (mrad) to text file
         % @param {char 1xm} c - extra to append to filename
         function dlm(this, c)
+                        
+            x = this.dVx / this.uieVoltsScale.get(); % values in [-1 : 1]
+            y = this.dVy / this.uieVoltsScale.get(); % values in [-1 : 1]
             
+            x = x * 3;
+            y = y * 3;
             
+            %{
             x = double(this.i32X)'/(2^20/2) * 3;
             y = double(this.i32Y)'/(2^20/2) * 3;
+            %}
             
             % figure
             % plot(x, y)
@@ -286,12 +293,7 @@ classdef ScannerControl < mic.Base
             % this.buildDevicePanel();
             % this.np.build(this.hFigure, 750 + 160, this.dYOffset);
             this.uilSaved.refresh();
-            
             this.onLC400Connect()
-            
-            
-            
-            
         end
         
         function delete(this)
@@ -1180,8 +1182,7 @@ classdef ScannerControl < mic.Base
             %   dVxCorrected, 
             %   dVyCorrected, 
             %   dTime 
-            %   i32X
-            %   i32Y
+
             %
             % and update plot preview
             
@@ -1299,21 +1300,7 @@ classdef ScannerControl < mic.Base
             
             
             
-            dVxRel = this.dVx / this.uieVoltsScale.get(); % values in [-1 : 1]
-            dVyRel = this.dVy / this.uieVoltsScale.get(); % values in [-1 : 1]
             
-            % 2017.02.02
-            % Adding correction factor for AOI.  The x direction receives
-            % cos(45) less displacement than y so need to increase it.
-            
-            dVxRelCor = dVxRel / cos(this.dThetaX * pi / 180);
-            dVyRelCor = dVyRel / cos(this.dThetaY * pi / 180);
-            
-            % Convert to values between +/- (2^19 - 1) and cast as int32 as
-            % this is needed for LC400 max value and min value
-            
-            this.i32X = int32(dVxRelCor * (2^19 - 1));
-            this.i32Y = int32(dVyRelCor * (2^19 - 1));  
                         
         end
         
@@ -1660,7 +1647,7 @@ classdef ScannerControl < mic.Base
 
 
             % Popup (to select type)
-            this.uipType.build(this.hWaveformPanel, dLeftCol1, dTop, 190, mic.Utils.dEDITHEIGHT);
+            this.uipType.build(this.hWaveformPanel, dLeftCol1, dTop, 190, this.dHeightEdit);
 
             % Build the sub-panel based on popup type 
             switch this.uipType.getSelectedIndex()
@@ -1688,10 +1675,10 @@ classdef ScannerControl < mic.Base
 
             % Preview and save buttons
             dTop = 630;
-            this.uibPreview.build(this.hWaveformPanel, dLeftCol1, dTop, 190, mic.Utils.dEDITHEIGHT);
+            this.uibPreview.build(this.hWaveformPanel, dLeftCol1, dTop, 190, this.dHeightEdit);
             dTop = dTop + 30;
 
-            this.uibSave.build(this.hWaveformPanel, dLeftCol1, dTop, 190, mic.Utils.dEDITHEIGHT);
+            this.uibSave.build(this.hWaveformPanel, dLeftCol1, dTop, 190, this.dHeightEdit);
             dTop = dTop + dSep;
                 
             
@@ -1722,12 +1709,12 @@ classdef ScannerControl < mic.Base
 
             % Build filter Hz, Volts scale and time step
 
-            this.uieFilterHz.build(this.hWaveformGeneralPanel, dLeftCol1, dTop, dEditWidth, mic.Utils.dEDITHEIGHT);            
-            this.uieVoltsScale.build(this.hWaveformGeneralPanel, dLeftCol2, dTop, dEditWidth, mic.Utils.dEDITHEIGHT);
+            this.uieFilterHz.build(this.hWaveformGeneralPanel, dLeftCol1, dTop, dEditWidth, this.dHeightEdit);            
+            this.uieVoltsScale.build(this.hWaveformGeneralPanel, dLeftCol2, dTop, dEditWidth, this.dHeightEdit);
             dTop = dTop + dSep;
 
-            this.uieTimeStep.build(this.hWaveformGeneralPanel, dLeftCol1, dTop, dEditWidth, mic.Utils.dEDITHEIGHT);
-            this.uieConvKernelSig.build(this.hWaveformGeneralPanel, dLeftCol2, dTop, dEditWidth, mic.Utils.dEDITHEIGHT);
+            this.uieTimeStep.build(this.hWaveformGeneralPanel, dLeftCol1, dTop, dEditWidth, this.dHeightEdit);
+            this.uieConvKernelSig.build(this.hWaveformGeneralPanel, dLeftCol2, dTop, dEditWidth, this.dHeightEdit);
 
             dTop = dTop + dSep; 
                             
@@ -1744,7 +1731,7 @@ classdef ScannerControl < mic.Base
             dLeftCol2 = 100;
             dEditWidth = 80;
             dTop = 20;
-            dSep = 55;
+            dSep = 40;
 
             % Panel
             this.hWaveformMultiPanel = uipanel(...
@@ -1756,34 +1743,33 @@ classdef ScannerControl < mic.Base
             );
             drawnow;
 
-            this.uieMultiPoleNum.build(this.hWaveformMultiPanel, dLeftCol1, dTop, dEditWidth, mic.Utils.dEDITHEIGHT);
-            this.uieMultiTransitTime.build(this.hWaveformMultiPanel, dLeftCol2, dTop, dEditWidth, mic.Utils.dEDITHEIGHT);            
-
+            this.uieMultiPoleNum.build(this.hWaveformMultiPanel, dLeftCol1, dTop, dEditWidth, this.dHeightEdit);
+            this.uieMultiTransitTime.build(this.hWaveformMultiPanel, dLeftCol2, dTop, dEditWidth, this.dHeightEdit);            
 
             dTop = dTop + dSep;
 
-            this.uieMultiSigMin.build(this.hWaveformMultiPanel, dLeftCol1, dTop, dEditWidth, mic.Utils.dEDITHEIGHT);
-            this.uieMultiSigMax.build(this.hWaveformMultiPanel, dLeftCol2, dTop, dEditWidth, mic.Utils.dEDITHEIGHT);
+            this.uieMultiSigMin.build(this.hWaveformMultiPanel, dLeftCol1, dTop, dEditWidth, this.dHeightEdit);
+            this.uieMultiSigMax.build(this.hWaveformMultiPanel, dLeftCol2, dTop, dEditWidth, this.dHeightEdit);
             dTop = dTop + dSep;
 
-            this.uieMultiCirclesPerPole.build(this.hWaveformMultiPanel, dLeftCol1, dTop, dEditWidth, mic.Utils.dEDITHEIGHT);
-            this.uieMultiDwell.build(this.hWaveformMultiPanel, dLeftCol2, dTop, dEditWidth, mic.Utils.dEDITHEIGHT);
+            this.uieMultiCirclesPerPole.build(this.hWaveformMultiPanel, dLeftCol1, dTop, dEditWidth, this.dHeightEdit);
+            this.uieMultiDwell.build(this.hWaveformMultiPanel, dLeftCol2, dTop, dEditWidth, this.dHeightEdit);
             dTop = dTop + dSep;
 
-            this.uieMultiOffset.build(this.hWaveformMultiPanel, dLeftCol1, dTop, dEditWidth, mic.Utils.dEDITHEIGHT);
-            this.uieMultiRot.build(this.hWaveformMultiPanel, dLeftCol2, dTop, dEditWidth, mic.Utils.dEDITHEIGHT);
+            this.uieMultiOffset.build(this.hWaveformMultiPanel, dLeftCol1, dTop, dEditWidth, this.dHeightEdit);
+            this.uieMultiRot.build(this.hWaveformMultiPanel, dLeftCol2, dTop, dEditWidth, this.dHeightEdit);
             dTop = dTop + dSep;
 
-            this.uieMultiXOffset.build(this.hWaveformMultiPanel, dLeftCol1, dTop, dEditWidth, mic.Utils.dEDITHEIGHT);
-            this.uieMultiYOffset.build(this.hWaveformMultiPanel, dLeftCol2, dTop, dEditWidth, mic.Utils.dEDITHEIGHT);
+            this.uieMultiXOffset.build(this.hWaveformMultiPanel, dLeftCol1, dTop, dEditWidth, this.dHeightEdit);
+            this.uieMultiYOffset.build(this.hWaveformMultiPanel, dLeftCol2, dTop, dEditWidth, this.dHeightEdit);
             dTop = dTop + dSep;
 
             % Popup (to select type)
-            this.uipMultiTimeType.build(this.hWaveformMultiPanel, dLeftCol1, dTop, 170, mic.Utils.dEDITHEIGHT);
+            this.uipMultiTimeType.build(this.hWaveformMultiPanel, dLeftCol1, dTop, 170, this.dHeightEdit);
             dTop = dTop + 45;
 
-            this.uieMultiPeriod.build(this.hWaveformMultiPanel, dLeftCol1, dTop, dEditWidth, mic.Utils.dEDITHEIGHT);
-            this.uieMultiHz.build(this.hWaveformMultiPanel, dLeftCol1, dTop, dEditWidth, mic.Utils.dEDITHEIGHT);                
+            this.uieMultiPeriod.build(this.hWaveformMultiPanel, dLeftCol1, dTop, dEditWidth, this.dHeightEdit);
+            this.uieMultiHz.build(this.hWaveformMultiPanel, dLeftCol1, dTop, dEditWidth, this.dHeightEdit);                
 
             % Call handler for multitimetype to make active type visible
             this.onMultiTimeTypeChange();
@@ -1820,8 +1806,8 @@ classdef ScannerControl < mic.Base
             drawnow;
 
 
-            this.uieDCx.build(this.hWaveformDCPanel, dLeftCol1, dTop, dEditWidth, mic.Utils.dEDITHEIGHT);            
-            this.uieDCy.build(this.hWaveformDCPanel, dLeftCol2, dTop, dEditWidth, mic.Utils.dEDITHEIGHT);
+            this.uieDCx.build(this.hWaveformDCPanel, dLeftCol1, dTop, dEditWidth, this.dHeightEdit);            
+            this.uieDCy.build(this.hWaveformDCPanel, dLeftCol2, dTop, dEditWidth, this.dHeightEdit);
 
             drawnow;
 
@@ -1851,10 +1837,10 @@ classdef ScannerControl < mic.Base
             drawnow;
 
 
-            this.uieRastorData.build(this.hWaveformRastorPanel, dLeftCol1, dTop, 170, mic.Utils.dEDITHEIGHT); 
+            this.uieRastorData.build(this.hWaveformRastorPanel, dLeftCol1, dTop, 170, this.dHeightEdit); 
             dTop = dTop + dSep;     
 
-            this.uieRastorTransitTime.build(this.hWaveformRastorPanel, dLeftCol1, dTop, dEditWidth, mic.Utils.dEDITHEIGHT);
+            this.uieRastorTransitTime.build(this.hWaveformRastorPanel, dLeftCol1, dTop, dEditWidth, this.dHeightEdit);
 
             drawnow;
                         
@@ -1881,27 +1867,27 @@ classdef ScannerControl < mic.Base
             );
             drawnow;
 
-            this.uieSawSigX.build(this.hWaveformSawPanel, dLeftCol1, dTop, dEditWidth, mic.Utils.dEDITHEIGHT);
-            this.uieSawSigY.build(this.hWaveformSawPanel, dLeftCol2, dTop, dEditWidth, mic.Utils.dEDITHEIGHT);            
+            this.uieSawSigX.build(this.hWaveformSawPanel, dLeftCol1, dTop, dEditWidth, this.dHeightEdit);
+            this.uieSawSigY.build(this.hWaveformSawPanel, dLeftCol2, dTop, dEditWidth, this.dHeightEdit);            
 
             dTop = dTop + dSep;
 
-            this.uieSawPhaseX.build(this.hWaveformSawPanel, dLeftCol1, dTop, dEditWidth, mic.Utils.dEDITHEIGHT);
-            this.uieSawPhaseY.build(this.hWaveformSawPanel, dLeftCol2, dTop, dEditWidth, mic.Utils.dEDITHEIGHT);            
+            this.uieSawPhaseX.build(this.hWaveformSawPanel, dLeftCol1, dTop, dEditWidth, this.dHeightEdit);
+            this.uieSawPhaseY.build(this.hWaveformSawPanel, dLeftCol2, dTop, dEditWidth, this.dHeightEdit);            
 
             dTop = dTop + dSep;
 
-            this.uieSawOffsetX.build(this.hWaveformSawPanel, dLeftCol1, dTop, dEditWidth, mic.Utils.dEDITHEIGHT);
-            this.uieSawOffsetY.build(this.hWaveformSawPanel, dLeftCol2, dTop, dEditWidth, mic.Utils.dEDITHEIGHT);            
+            this.uieSawOffsetX.build(this.hWaveformSawPanel, dLeftCol1, dTop, dEditWidth, this.dHeightEdit);
+            this.uieSawOffsetY.build(this.hWaveformSawPanel, dLeftCol2, dTop, dEditWidth, this.dHeightEdit);            
 
             dTop = dTop + dSep;
 
-            this.uipSawTimeType.build(this.hWaveformSawPanel, dLeftCol1, dTop, 170, mic.Utils.dEDITHEIGHT);
+            this.uipSawTimeType.build(this.hWaveformSawPanel, dLeftCol1, dTop, 170, this.dHeightEdit);
 
             dTop = dTop + 45;
 
-            this.uieSawPeriod.build(this.hWaveformSawPanel, dLeftCol1, dTop, dEditWidth, mic.Utils.dEDITHEIGHT);
-            this.uieSawHz.build(this.hWaveformSawPanel, dLeftCol1, dTop, dEditWidth, mic.Utils.dEDITHEIGHT);                
+            this.uieSawPeriod.build(this.hWaveformSawPanel, dLeftCol1, dTop, dEditWidth, this.dHeightEdit);
+            this.uieSawHz.build(this.hWaveformSawPanel, dLeftCol1, dTop, dEditWidth, this.dHeightEdit);                
             this.onSawTimeTypeChange(); % Call handler for multitimetype to make active type visible
 
             drawnow;
@@ -1919,7 +1905,7 @@ classdef ScannerControl < mic.Base
             dLeftCol2 = 100;
             dEditWidth = 80;
             dTop = 20;
-            dSep = 55;
+            dSep = 40;
 
             this.hWaveformSerpPanel = uipanel(...
                 'Parent', this.hWaveformPanel,...
@@ -1930,22 +1916,22 @@ classdef ScannerControl < mic.Base
             );
             drawnow;
 
-            this.uieSerpSigX.build(this.hWaveformSerpPanel, dLeftCol1, dTop, dEditWidth, mic.Utils.dEDITHEIGHT);
-            this.uieSerpSigY.build(this.hWaveformSerpPanel, dLeftCol2, dTop, dEditWidth, mic.Utils.dEDITHEIGHT);            
+            this.uieSerpSigX.build(this.hWaveformSerpPanel, dLeftCol1, dTop, dEditWidth, this.dHeightEdit);
+            this.uieSerpSigY.build(this.hWaveformSerpPanel, dLeftCol2, dTop, dEditWidth, this.dHeightEdit);            
 
             dTop = dTop + dSep;
 
-            this.uieSerpNumX.build(this.hWaveformSerpPanel, dLeftCol1, dTop, dEditWidth, mic.Utils.dEDITHEIGHT);
-            this.uieSerpNumY.build(this.hWaveformSerpPanel, dLeftCol2, dTop, dEditWidth, mic.Utils.dEDITHEIGHT);            
+            this.uieSerpNumX.build(this.hWaveformSerpPanel, dLeftCol1, dTop, dEditWidth, this.dHeightEdit);
+            this.uieSerpNumY.build(this.hWaveformSerpPanel, dLeftCol2, dTop, dEditWidth, this.dHeightEdit);            
 
             dTop = dTop + dSep;
 
-            this.uieSerpOffsetX.build(this.hWaveformSerpPanel, dLeftCol1, dTop, dEditWidth, mic.Utils.dEDITHEIGHT);
-            this.uieSerpOffsetY.build(this.hWaveformSerpPanel, dLeftCol2, dTop, dEditWidth, mic.Utils.dEDITHEIGHT);            
+            this.uieSerpOffsetX.build(this.hWaveformSerpPanel, dLeftCol1, dTop, dEditWidth, this.dHeightEdit);
+            this.uieSerpOffsetY.build(this.hWaveformSerpPanel, dLeftCol2, dTop, dEditWidth, this.dHeightEdit);            
 
             dTop = dTop + dSep;
 
-            this.uieSerpPeriod.build(this.hWaveformSerpPanel, dLeftCol1, dTop, dEditWidth, mic.Utils.dEDITHEIGHT);
+            this.uieSerpPeriod.build(this.hWaveformSerpPanel, dLeftCol1, dTop, dEditWidth, this.dHeightEdit);
 
             drawnow;
             
@@ -1979,7 +1965,7 @@ classdef ScannerControl < mic.Base
                 dLeft, ... % l
                 dTop, ... % t
                 dButtonWidth, ... % w
-                mic.Utils.dEDITHEIGHT ... % h
+                this.dHeightEdit ... % h
             );
             dLeft = dLeft + dButtonWidth + 10;
             
@@ -1987,7 +1973,7 @@ classdef ScannerControl < mic.Base
                 dLeft, ... % l
                 dTop, ... % t
                 dButtonWidth, ... % w
-                mic.Utils.dEDITHEIGHT ... % h
+                this.dHeightEdit ... % h
             );
             dLeft = dLeft + dButtonWidth + 10;
             
@@ -1996,7 +1982,7 @@ classdef ScannerControl < mic.Base
                 dLeft, ... % l
                 dTop, ... % t
                 dButtonWidth, ... % w
-                mic.Utils.dEDITHEIGHT ... % h
+                this.dHeightEdit ... % h
             );
             dLeft = dLeft + dButtonWidth + 10;
             
@@ -2027,7 +2013,7 @@ classdef ScannerControl < mic.Base
             drawnow; 
 
             % Popup (to select type)
-            this.uipPlotType.build(this.hPlotPanel, 10, 20, 190, mic.Utils.dEDITHEIGHT);
+            this.uipPlotType.build(this.hPlotPanel, 10, 20, 190, this.dHeightEdit);
 
             % Call handler for popup to build type
             this.onPlotTypeChange();
@@ -2168,14 +2154,14 @@ classdef ScannerControl < mic.Base
             drawnow;
 
             % Button
-            this.uibRecord.build(this.hPlotRecordPanel, 0, 0, 100, mic.Utils.dEDITHEIGHT);
+            this.uibRecord.build(this.hPlotRecordPanel, 0, 0, 100, this.dHeightEdit);
 
             % Time
-            this.uieRecordTime.build(this.hPlotRecordPanel, 105, 0, 40, mic.Utils.dEDITHEIGHT);
+            this.uieRecordTime.build(this.hPlotRecordPanel, 105, 0, 40, this.dHeightEdit);
 
             % "ms"
             uitLabel = mic.ui.common.Text('cVal', 'ms');
-            uitLabel.build(this.hPlotRecordPanel, 150, 8, 30, mic.Utils.dEDITHEIGHT);
+            uitLabel.build(this.hPlotRecordPanel, 150, 8, 30, this.dHeightEdit);
 
             % this.uibRecord.hide();
             % this.uieRecordTime.hide();
@@ -2662,11 +2648,10 @@ classdef ScannerControl < mic.Base
             
         end
         
-        
-        function onWriteClick(this, src, evt)
-                        
-            if isempty(this.i32X) || ...
-               isempty(this.i32Y)
+        function [i32X, i32Y] = get20BitWaveforms(this)
+            
+            if isempty(this.dVx) || ...
+               isempty(this.dVy)
                 
                 % Empty - did not type anything
                 % Throw a warning box and recursively call
@@ -2683,10 +2668,36 @@ classdef ScannerControl < mic.Base
                 return;
             end
             
+            % Convert the voltages into ints between +/- (2^19 - 1) where
+            % 2^19 - 1 is the max 
+            
+            % Step 1, get values in [-1 1]
+            dVxRel = this.dVx / this.uieVoltsScale.get(); % values in [-1 : 1]
+            dVyRel = this.dVy / this.uieVoltsScale.get(); % values in [-1 : 1]
+            
+            % 2017.02.02
+            % Adding correction factor for AOI.  The x direction receives
+            % cos(45) less displacement than y so need to increase it.
+            
+            dVxRelCor = dVxRel / cos(this.dThetaX * pi / 180);
+            dVyRelCor = dVyRel / cos(this.dThetaY * pi / 180);
+            
+            % Convert to values between +/- (2^19 - 1) and cast as int32 as
+            % this is needed for LC400 max value and min value
+            
+            i32X = int32(dVxRelCor * (2^19 - 1));
+            i32Y = int32(dVyRelCor * (2^19 - 1));  
+            
+        end
+        
+        function onWriteClick(this, src, evt)
+                                    
+            [i32X, i32Y] = this.get20BitWaveforms();
+            
             this.uibWriteWaveform.setText('Writing ...');
             drawnow;
             
-            this.setWavetable(this.i32X, this.i32Y)  
+            this.setWavetable(i32X, i32Y)  
             this.uibWriteWaveform.setText('Write nPoint')
             
             h = msgbox( ...
