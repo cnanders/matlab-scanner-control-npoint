@@ -3,6 +3,12 @@ classdef ScannerControl < mic.Base
 %
 %   See also ScannerCore, RETICLEPICK, HEIGHTSENSOR
     
+
+% Currently, saving saves the state of every UI element
+% Loading loads the state of every UI element and calls onPreview() to
+% calculate the waveforms and plot them
+
+
     properties (Constant)
         
         dPupilScale     = 1.1;
@@ -155,7 +161,7 @@ classdef ScannerControl < mic.Base
         
         uieRastorData
         uieRastorTransitTime
-        uilSaved
+        uildSaved
         
         uieFilterHz
         uieVoltsScale
@@ -169,6 +175,8 @@ classdef ScannerControl < mic.Base
         uibWriteWaveform
         uibStartWaveform
         uibStopWaveform
+        
+        
         
     end
     
@@ -256,7 +264,7 @@ classdef ScannerControl < mic.Base
             this.hFigure = figure( ...
                 'NumberTitle', 'off', ...
                 'MenuBar', 'none', ...
-                'Name',  sprintf('Scanner Control (%s)', this.cDevice), ...
+                'Name',  sprintf('Waveform Creator (%s)', this.cDevice), ...
                 'Position', [ ...
                     (dScreenSize(3) - this.dWidth)/2 ...
                     (dScreenSize(4) - this.dHeight)/2 ...
@@ -292,7 +300,7 @@ classdef ScannerControl < mic.Base
             % this.buildCameraPanel();
             % this.buildDevicePanel();
             % this.np.build(this.hFigure, 750 + 160, this.dYOffset);
-            this.uilSaved.refresh();
+            this.uildSaved.refresh();
             this.onLC400Connect()
         end
         
@@ -718,30 +726,27 @@ classdef ScannerControl < mic.Base
         end
         
         function initSavedWaveformsPanel(this)
-            
-            this.uilSaved = mic.ui.common.List(...
-                'ceOptions', cell(1,0), ...
-                'cLabel', '', ...
+                        
+            this.uildSaved = mic.ui.common.ListDir(...
+                'cDir', this.cDirWaveforms, ...
+                'cFilter', '*.mat', ...
+                'fhOnChange', @this.onListChange, ...
                 'lShowDelete', true, ...
-                'lShowMove', true, ...
-                'lShowLabel', false, ...
-                'lShowRefresh', true);
-            this.uilSaved.setRefreshFcn(@this.onListRefresh);
-            
-            addlistener(this.uilSaved, 'eChange', @this.onListChange);
-            addlistener(this.uilSaved, 'eDelete', @this.onListChangeDelete);
+                'lShowMove', false, ...
+                'lShowLabel', false ...
+            );
             
             
+            %{
             this.uibWriteWaveform = mic.ui.common.Button('cText', 'Write nPoint');
             addlistener(this.uibWriteWaveform, 'eChange', @this.onWriteClick);
-            
             
             this.uibStartWaveform = mic.ui.common.Button('cText', 'Start nPoint');
             addlistener(this.uibStartWaveform, 'eChange', @this.onStartClick);
             
             this.uibStopWaveform = mic.ui.common.Button('cText', 'Stop nPoint');
             addlistener(this.uibStopWaveform, 'eChange', @this.onStopClick);
-            
+            %}    
         end
         
         function init(this)
@@ -845,9 +850,11 @@ classdef ScannerControl < mic.Base
             % this.uibRecord.show();
             % this.uieRecordTime.show();
             
+            %{
             this.uibWriteWaveform.show();
             this.uibStartWaveform.show(); 
             this.uibStopWaveform.show();
+            %}
             
             
         end
@@ -1529,7 +1536,7 @@ classdef ScannerControl < mic.Base
             
             cePrompt = {'Save As:'};
             cTitle = '';
-            dLines = 1;
+            dLines = [1 130];
             ceDefaultAns = {cName};
             ceAnswer = inputdlg(...
                 cePrompt,...
@@ -1562,19 +1569,21 @@ classdef ScannerControl < mic.Base
         
         % @param {char 1xm} cFileName name of file with '.mat' extension
         function savePupilFill(this, cFileName)
-                                    
-            % Create a nested recursive structure of all public properties
-            
+                                                
             s = this.save();
+            save(fullfile(this.uildSaved.getDir(), cFileName), 's');
             
-            save(fullfile(this.cDirWaveforms, cFileName), 's');
+            % Update the mic.ui.common.ListDir
+            this.uildSaved.refresh();
             
+            %{
             % If the name is not already on the list, append it
-            if isempty(strmatch(cFileName, this.uilSaved.getOptions(), 'exact'))
-                this.uilSaved.append(cFileName);
+            if isempty(strmatch(cFileName, this.uildSaved.getOptions(), 'exact'))
+                this.uildSaved.append(cFileName);
             end
             
             notify(this, 'eNew');
+            %}
             
             % this.saveAsciiFiles(cFileName)            
            
@@ -1943,7 +1952,6 @@ classdef ScannerControl < mic.Base
                 return;
             end
             
-
             dWidth = this.dWidthSavedWaveformsPanel;
 
             hPanel = uipanel(...
@@ -1954,10 +1962,18 @@ classdef ScannerControl < mic.Base
                 'Position', mic.Utils.lt2lb([230 this.dYOffset dWidth 350], this.hFigure) ...
             );
             drawnow;
-
-            dButtonWidth = 100;
-            this.uilSaved.build(hPanel, 10, 20, dWidth-20, 290);
             
+            dButtonWidth = 100;
+            this.uildSaved.build(...
+                hPanel, ...
+                10, ...
+                20, ...
+                dWidth-20, ...
+                260 ...
+            );
+            
+            
+            %{
             dTop = 315;
             dLeft = 10;
             
@@ -1993,6 +2009,7 @@ classdef ScannerControl < mic.Base
             this.uibWriteWaveform.hide();
             this.uibStartWaveform.hide();
             this.uibStopWaveform.hide();
+            %}
                 
             
         end
@@ -2174,7 +2191,10 @@ classdef ScannerControl < mic.Base
         
         
         function onCloseRequest(this, src, evt)
-            delete(this.hFigure);
+            
+            if ishandle(this.hFigure)
+                delete(this.hFigure);
+            end
             this.saveState(); 
         end
         
@@ -2488,42 +2508,11 @@ classdef ScannerControl < mic.Base
             
         end
         
-        function onListChangeDelete(this, src, evt)
-           
-            % In this case, evt is an instance of EventWithData (custom
-            % class that extends event.EventData) that has a property
-            % stData (a structure).  The structure has one property called
-            % options which is a cell array of the items on the list that
-            % were just deleted.
-            % 
-            % Need to loop through them and delete them from the directory.
-            % The actual filenames are appended with .mat
-            
-            evt.stData.ceOptions
-            
-            for k = 1:length(evt.stData.ceOptions)
-                
-                cFile = fullfile( ...
-                    this.cDirWaveforms, ...
-                    evt.stData.ceOptions{k} ...
-                );
-            
-                if exist(cFile, 'file') ~= 0
-                    % File exists, delete it
-                    delete(cFile);
-                else
-                    this.msg(sprintf('Cannot find file: %s; not deleting.', cFile));
-                end
-                
-            end
-            
-            notify(this, 'eDelete')
-
-        end
         
         function onListChange(this, src, evt)
             
-                        
+            this.msg('onListChange()');
+            
             % Make sure preview is showing
             
             if this.uipPlotType.getSelectedIndex() ~= uint8(1)
@@ -2532,7 +2521,7 @@ classdef ScannerControl < mic.Base
             
             
             % Load the .mat file
-            ceSelected = this.uilSaved.get();
+            ceSelected = this.uildSaved.get();
             
             if ~isempty(ceSelected)
                 
@@ -2541,7 +2530,7 @@ classdef ScannerControl < mic.Base
                 % workspace of this method
                 
                 cFile = fullfile( ...
-                    this.cDirWaveforms, ...
+                    this.uildSaved.getDir(), ...
                     ceSelected{1} ...
                 );
             
@@ -2733,13 +2722,7 @@ classdef ScannerControl < mic.Base
             
         end
         
-        function ceReturn = onListRefresh(this)
-            
-            % Get path to the save directory
-            
-            ceReturn = mic.Utils.dir2cell(this.cDirWaveforms, 'date', 'descend', '*.mat');
-                        
-        end
+        
         
         % @return {double m x n} return a matrix that represents the
         % intensity distribution of the scan kernel (beam intensity). 
@@ -2828,7 +2811,9 @@ classdef ScannerControl < mic.Base
             end
         end
         %}
-    
+        
+        
+        
         
     end
 
