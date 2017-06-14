@@ -14,11 +14,12 @@ addpath(genpath(cDirSrc));
 % github/cnanders/matlab-npoint-lc400
 % github/cnanders/matlab-ieee
 % github/cnanders/matlab-hex
-addpath(genpath(fullfile(cDirVendor, 'github', 'cnanders', 'matlab-instrument-control')));
-%addpath(genpath(fullfile(cDirVendor, 'github', 'cnanders', 'matlab-npoint-lc400', 'pkg')));
-%addpath(genpath(fullfile(cDirVendor, 'github', 'cnanders', 'matlab-ieee', 'pkg')));
-%addpath(genpath(fullfile(cDirVendor, 'github', 'cnanders', 'matlab-hex', 'pkg')));
 
+
+addpath(genpath(fullfile(cDirVendor, 'github', 'cnanders', 'matlab-instrument-control', 'src')));
+addpath(genpath(fullfile(cDirVendor, 'github', 'cnanders', 'matlab-npoint-lc400', 'src')));
+addpath(genpath(fullfile(cDirVendor, 'github', 'cnanders', 'matlab-ieee', 'src')));
+addpath(genpath(fullfile(cDirVendor, 'github', 'cnanders', 'matlab-hex', 'src')));
 
 
 % Known bug in MATLAB that you cannot add a class to a path and then import

@@ -1,6 +1,12 @@
 ToDo:
 
-- Add AOI fields for the x and y directinos and use these in the code
+- Add AOI fields for the x and y directinos and use these in the code (these can be passed in during construction)
+
+
+## 1.1.3 
+
+- The code and UI to send waveforms to the LC400 is better separated from the rest of the code
+- Got rid of volts scale (set to 1 everywhere)
 
 ## 1.1.2
 
