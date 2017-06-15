@@ -165,7 +165,7 @@ classdef ScannerControl < mic.Base
         
         uiEditRastorData
         uiEditRastorTransitTime
-        uildSaved
+        uiListDirSaved
         
         uiEditFilterHz
         uiEditConvKernelSig
@@ -288,7 +288,7 @@ classdef ScannerControl < mic.Base
             this.hFigure = figure( ...
                 'NumberTitle', 'off', ...
                 'MenuBar', 'none', ...
-                'Name',  sprintf('Scanner Control (%s)', this.cDevice), ...
+                'Name',  sprintf('%s Scanner Control', this.cDevice), ...
                 'Position', [ ...
                     (dScreenSize(3) - this.dWidth)/2 ...
                     (dScreenSize(4) - this.dHeight)/2 ...
@@ -319,14 +319,14 @@ classdef ScannerControl < mic.Base
             end
             
             this.buildWaveformPanel();
-            this.buildSavedWaveformsPanel();
+            this.buiListDirSavedWaveformsPanel();
             this.buildPlotPanel();
             this.buildLC400Panel();
             
             % this.buildCameraPanel();
             % this.buildDevicePanel();
             % this.np.build(this.hFigure, 750 + 160, this.dYOffset);
-            this.uildSaved.refresh();
+            this.uiListDirSaved.refresh();
             this.onListChange();
         end
         
@@ -350,10 +350,10 @@ classdef ScannerControl < mic.Base
             
         end
         
-        function load(this, st)
+        function loadWaveformPanelState(this, st)
            
              this.uipType.load(st.uipType);
-             this.uipPlotType.load(st.uipPlotType);
+             % this.uipPlotType.load(st.uipPlotType);
 
              this.uiEditMultiPoleNum.load(st.uiEditMultiPoleNum);
              this.uiEditMultiSigMin.load(st.uiEditMultiSigMin);
@@ -396,15 +396,16 @@ classdef ScannerControl < mic.Base
 
              this.uiEditFilterHz.load(st.uiEditFilterHz);
              this.uiEditConvKernelSig.load(st.uiEditConvKernelSig);
+             
             
         end
         
-        function st = save(this)
+        function st = saveWaveformPanelState(this)
             
             st = struct();
             
             st.uipType = this.uipType.save();
-            st.uipPlotType = this.uipPlotType.save();
+            % st.uipPlotType = this.uipPlotType.save();
 
             st.uiEditMultiPoleNum = this.uiEditMultiPoleNum.save();
             st.uiEditMultiSigMin = this.uiEditMultiSigMin.save();
@@ -447,7 +448,17 @@ classdef ScannerControl < mic.Base
 
             st.uiEditFilterHz = this.uiEditFilterHz.save();
             st.uiEditConvKernelSig = this.uiEditConvKernelSig.save();
-
+        end
+        
+        
+        function st = save(this)
+            st = struct();
+        	st.uiListDirSaved = this.uiListDirSaved.save();
+        end
+        
+        
+        function load(this, st)
+            this.uiListDirSaved.load(st.uiListDirSaved);
         end
 
     end
@@ -745,7 +756,7 @@ classdef ScannerControl < mic.Base
         
         function initSavedWaveformsPanel(this)
                         
-            this.uildSaved = mic.ui.common.ListDir(...
+            this.uiListDirSaved = mic.ui.common.ListDir(...
                 'cDir', this.cDirWaveforms, ...
                 'cFilter', '*.mat', ...
                 'fhOnChange', @this.onListChange, ...
@@ -813,7 +824,7 @@ classdef ScannerControl < mic.Base
                 'ceVararginCommandToggle', ceVararginCommandToggle, ...
                 'lShowInitButton', false, ...
                 'lShowDevice', false, ...
-                'cName', 'npoint-lc400-a', ...
+                'cName', sprintf('npoint-lc400-ip-%s', this.cLC400TcpipHost), ...
                 'dWidthName', 50, ...
                 'lShowLabels', false, ...
                 'cLabel', 'Scanning:'...
@@ -1686,16 +1697,16 @@ classdef ScannerControl < mic.Base
         % @param {char 1xm} cFileName name of file with '.mat' extension
         function savePupilFill(this, cFileName)
                                                 
-            s = this.save();
-            save(fullfile(this.uildSaved.getDir(), cFileName), 's');
+            s = this.saveWaveformPanelState();
+            save(fullfile(this.uiListDirSaved.getDir(), cFileName), 's');
             
             % Update the mic.ui.common.ListDir
-            this.uildSaved.refresh();
+            this.uiListDirSaved.refresh();
             
             %{
             % If the name is not already on the list, append it
-            if isempty(strmatch(cFileName, this.uildSaved.getOptions(), 'exact'))
-                this.uildSaved.append(cFileName);
+            if isempty(strmatch(cFileName, this.uiListDirSaved.getOptions(), 'exact'))
+                this.uiListDirSaved.append(cFileName);
             end
             
             notify(this, 'eNew');
@@ -2062,7 +2073,7 @@ classdef ScannerControl < mic.Base
             
         end
         
-        function buildSavedWaveformsPanel(this)
+        function buiListDirSavedWaveformsPanel(this)
             
             if ~ishandle(this.hFigure)
                 return;
@@ -2081,7 +2092,7 @@ classdef ScannerControl < mic.Base
             drawnow;
             
             dButtonWidth = 100;
-            this.uildSaved.build(...
+            this.uiListDirSaved.build(...
                 hPanel, ...
                 10, ...
                 20, ...
@@ -2712,7 +2723,7 @@ classdef ScannerControl < mic.Base
             
             
             % Load the .mat file
-            ceSelected = this.uildSaved.get();
+            ceSelected = this.uiListDirSaved.get();
             
             if ~isempty(ceSelected)
                 
@@ -2721,7 +2732,7 @@ classdef ScannerControl < mic.Base
                 % workspace of this method
                 
                 cFile = fullfile( ...
-                    this.uildSaved.getDir(), ...
+                    this.uiListDirSaved.getDir(), ...
                     ceSelected{1} ...
                 );
             
@@ -2730,7 +2741,7 @@ classdef ScannerControl < mic.Base
                 
                     load(cFile); % populates structure s in local workspace
 
-                    this.load(s);
+                    this.loadWaveformPanelState(s);
                     
                     % When dVx, dVy, etc. are private
                     this.onPreview();  
