@@ -19,6 +19,10 @@ classdef ScannerControl < mic.Base
         
         dWidthPlotPanel = 990;
         dWidthSavedWaveformsPanel = 990;
+        
+        dWidthPanelBorder = 0
+        dColorBgFigure = [200 200 200]./255;
+
 
     end
     
@@ -191,6 +195,13 @@ classdef ScannerControl < mic.Base
         cTitlePreview = 'Waveform Preview'
         
         
+        uiGetSetLogicalLC400Active
+        
+        % {mic.Clock 1x1}
+        clock
+
+        
+        
     end
     
     events
@@ -285,6 +296,7 @@ classdef ScannerControl < mic.Base
                     this.dHeight ...
                  ],... % left bottom width height
                 'Resize', 'off', ...
+                'Color', this.dColorBgFigure, ...
                 'HandleVisibility', 'on', ... % lets close all close the figure
                 'Visible', 'on' ...
             );
@@ -781,10 +793,34 @@ classdef ScannerControl < mic.Base
                 'cType', 'd', ...
                 'lShowLabel', true);
             
-             % Default values
+            % Default values
             this.uiEditLC400Time.setMax(2000);
             this.uiEditLC400Time.setMin(0);
             this.uiEditLC400Time.set(300);
+            
+            % Configure the mic.ui.common.Toggle instance
+            ceVararginCommandToggle = {...
+                'cTextTrue', 'Stop', ...
+                'cTextFalse', 'Start' ...
+            };
+
+            config = mic.config.GetSetLogical( ...
+                'cPath', 'config-get-set-logical.json' ...
+            );
+            this.uiGetSetLogicalLC400Active = mic.ui.device.GetSetLogical(...
+                'clock', this.clock, ...
+                'config', config, ...
+                'ceVararginCommandToggle', ceVararginCommandToggle, ...
+                'lShowInitButton', false, ...
+                'lShowDevice', false, ...
+                'cName', 'npoint-lc400-a', ...
+                'dWidthName', 50, ...
+                'lShowLabels', false, ...
+                'cLabel', 'Scanning:'...
+            );
+            
+            
+             
         end
         
         
@@ -869,6 +905,7 @@ classdef ScannerControl < mic.Base
             this.np.init();
             this.np.connect();
             
+           
             if this.uipPlotType.getSelectedIndex() == uint8(2)
                 % nPoint Monitor
                 if ishandle(this.hPlotRecordPanel)
@@ -889,6 +926,14 @@ classdef ScannerControl < mic.Base
             this.uiButtonLC400Read.enable()
             this.uiButtonLC400Record.enable()
             this.uiEditLC400Time.enable();
+            this.uiGetSetLogicalLC400Active.enable();
+            
+             % Connect the mic.ui.device.GetSetLogical to a device
+            device = GetSetLogicalFromLLC400(this.np, 'active');
+            this.uiGetSetLogicalLC400Active.setDevice(device);
+            this.uiGetSetLogicalLC400Active.turnOn();
+            
+            
                         
         end
         
@@ -910,6 +955,10 @@ classdef ScannerControl < mic.Base
             this.uiButtonLC400Read.disable();
             this.uiButtonLC400Record.disable();
             this.uiEditLC400Time.disable();
+            
+            this.uiGetSetLogicalLC400Active.disable();
+            this.uiGetSetLogicalLC400Active.turnOff();
+            
         end
         
         
@@ -1716,6 +1765,7 @@ classdef ScannerControl < mic.Base
                 'Parent', this.hFigure,...
                 'Units', 'pixels',...
                 'Title', 'Build Waveform',...
+                'BorderWidth', this.dWidthPanelBorder, ...
                 'Clipping', 'on',...
                 'Position', mic.Utils.lt2lb([10 10 210 700], this.hFigure) ...
             );
@@ -2024,8 +2074,9 @@ classdef ScannerControl < mic.Base
                 'Parent', this.hFigure,...
                 'Units', 'pixels',...
                 'Title', 'Saved Waveforms',...
+                'BorderWidth', this.dWidthPanelBorder, ...
                 'Clipping', 'on',...
-                'Position', mic.Utils.lt2lb([230 this.dYOffset dWidth 290], this.hFigure) ...
+                'Position', mic.Utils.lt2lb([230 340 dWidth 290], this.hFigure) ...
             );
             drawnow;
             
@@ -2053,13 +2104,14 @@ classdef ScannerControl < mic.Base
                 'Parent', this.hFigure,...
                 'Units', 'pixels',...
                 'Title', 'LC400 Comm',...
-                'Clipping', 'on',...
-                'Position', mic.Utils.lt2lb([230 660 dWidth 50], this.hFigure) ...
+                'BorderWidth', this.dWidthPanelBorder, ...
+                'Clipping', 'off',...
+                'Position', mic.Utils.lt2lb([230 640 dWidth 70], this.hFigure) ...
             );
             drawnow;
             
             dButtonWidth = 100;
-            dTop = 15;
+            dTop = 25;
             dLeft = 10;
             
             
@@ -2071,6 +2123,7 @@ classdef ScannerControl < mic.Base
             );
         
             dLeft = dLeft + dButtonWidth + 10;
+            dLeft = dLeft + 230
             
             this.uiButtonLC400Write.build(hPanel, ...
                 dLeft, ... % l
@@ -2081,6 +2134,7 @@ classdef ScannerControl < mic.Base
         
             dLeft = dLeft + dButtonWidth + 10;
             
+            %{
             this.uiButtonLC400Start.build(hPanel, ...
                 dLeft, ... % l
                 dTop, ... % t
@@ -2097,7 +2151,7 @@ classdef ScannerControl < mic.Base
                 this.dHeightEdit ... % h
             );
             dLeft = dLeft + dButtonWidth + 10;
-            
+            %}
             
             this.uiButtonLC400Read.build(hPanel, ...
                 dLeft, ... % l
@@ -2118,9 +2172,16 @@ classdef ScannerControl < mic.Base
             
             this.uiEditLC400Time.build(hPanel, ...
                 dLeft, ... % l
-                dTop - 5, ... % t
+                dTop - 10, ... % t
                 dButtonWidth, ... % w
                 this.dHeightEdit - 5 ... % h
+            );
+            dLeft = dLeft + dButtonWidth + 10;
+            
+            
+            this.uiGetSetLogicalLC400Active.build(hPanel, ...
+                dLeft, ... % l
+                dTop ... % t
             );
             dLeft = dLeft + dButtonWidth + 10;
             
@@ -2137,6 +2198,8 @@ classdef ScannerControl < mic.Base
             this.uiButtonLC400Read.disable();
             this.uiButtonLC400Record.disable();
             this.uiEditLC400Time.disable();
+            this.uiGetSetLogicalLC400Active.disable();
+            
             
         end
         
@@ -2150,8 +2213,10 @@ classdef ScannerControl < mic.Base
             this.hPlotPanel = uipanel(...
                 'Parent', this.hFigure,...
                 'Units', 'pixels',...
-                'Title', 'Plot',...
+                'Title', '',...
                 'Clipping', 'on',...
+                'BackgroundColor', [1 1 1], ...
+                'BorderWidth', this.dWidthPanelBorder, ...
                 'Position', mic.Utils.lt2lb([230 10 this.dWidthPlotPanel 320], this.hFigure) ...
             );
             drawnow; 
@@ -2178,6 +2243,7 @@ classdef ScannerControl < mic.Base
                 'Units', 'pixels',...
                 'Title', '',...
                 'Clipping', 'on',...
+                'BackgroundColor', [1 1 1], ...
                 'BorderType', 'none', ...
                 'Position', mic.Utils.lt2lb([2 20 990-6 280], this.hPlotPanel) ...
             );
@@ -2236,6 +2302,7 @@ classdef ScannerControl < mic.Base
                 'Units', 'pixels',...
                 'Title', '',...
                 'Clipping', 'on',...
+                'BackgroundColor', [1 1 1], ...
                 'BorderType', 'none', ...
                 'Position', mic.Utils.lt2lb([2 20 990-6 280], this.hPlotPanel) ...
             );
@@ -2807,11 +2874,25 @@ classdef ScannerControl < mic.Base
                                     
             [i32X, i32Y] = this.get20BitWaveforms();
             
+            % Prepare UI for writing state
             this.uiButtonLC400Write.setText('Writing ...');
+            lVal = this.uiGetSetLogicalLC400Active.get();
+            this.uiGetSetLogicalLC400Active.turnOff()
+            this.uiGetSetLogicalLC400Active.set(lVal);
+            this.uiGetSetLogicalLC400Active.disable();
+            this.uiButtonLC400Record.disable();
+            this.uiButtonLC400Read.disable();
             drawnow;
             
-            this.setWavetable(i32X, i32Y)  
+            this.setWavetable(i32X, i32Y) 
+            
+            % Revert UI to normal
+            this.uiGetSetLogicalLC400Active.turnOn();
+            this.uiGetSetLogicalLC400Active.enable();
+            this.uiButtonLC400Read.enable();
+            this.uiButtonLC400Record.enable();
             this.uiButtonLC400Write.setText(this.cLabelLC400Write)
+            drawnow;
             
             h = msgbox( ...
                 'The waveform has been written.  Click "Start Scan" to start.', ...
@@ -2822,28 +2903,49 @@ classdef ScannerControl < mic.Base
         end
         
         
-        function onLC400Stop(this, src, evt)
-            
-            % Stop
-            this.np.setTwoWavetablesActive(false);
-            
-            % Disable
-            this.np.setWavetableEnable(uint8(1), false);
-            this.np.setWavetableEnable(uint8(2), false);
-            
-        end
+        
         
         
         function onLC400Read(this, src, evt)
                         
             u32Samples = uint32(this.uiEditLC400Time.get() / 2000 * 83333);
             
+            
+            % Kind of a hack before calling getWavetables to prepare UI for
+            % "read" state
+            %
+            % 1
+            % Need to turn off the
+            % mic.ui.device.GetSetLogical that is polling it so the
+            % getWavetables call is not interrupted.  Also make sure to set
+            % it to its current value
+            %
+            % 2
+            % Also need to disable the "Record & Plot" button during the 
+            % getWavetables() call
+            
             cLabel = sprintf('Reading %u ...', u32Samples);
             this.uiButtonLC400Read.setText(cLabel);
+            
+            
+            
+            lVal = this.uiGetSetLogicalLC400Active.get();
+            this.uiGetSetLogicalLC400Active.turnOff()
+            this.uiGetSetLogicalLC400Active.set(lVal);
+            this.uiGetSetLogicalLC400Active.disable();
+            this.uiButtonLC400Record.disable();
+            this.uiButtonLC400Write.disable();
             drawnow;
             
             d = this.np.getWavetables(u32Samples);
+            
+            % Undo hack
+            this.uiGetSetLogicalLC400Active.turnOn()
+            this.uiGetSetLogicalLC400Active.enable();
+            this.uiButtonLC400Record.enable();
+            this.uiButtonLC400Write.enable();
             this.uiButtonLC400Read.setText(this.cLabelLC400Read);
+            drawnow;
 
             % Change plot type to preview
             this.uipPlotType.setSelectedIndex(uint8(1));
@@ -2871,13 +2973,27 @@ classdef ScannerControl < mic.Base
                         
             u32Samples = uint32(this.uiEditLC400Time.get() / 2000 * 83333);
             
+            % Prepare UI for "record" state
             cMsg = sprintf('Rec. %u ...', u32Samples);
             this.uiButtonLC400Record.setText(cMsg);
+            
+            lVal = this.uiGetSetLogicalLC400Active.get();
+            this.uiGetSetLogicalLC400Active.turnOff()
+            this.uiGetSetLogicalLC400Active.set(lVal);
+            this.uiGetSetLogicalLC400Active.disable();
+            this.uiButtonLC400Read.disable();
+            this.uiButtonLC400Write.disable();
             drawnow;
             
             dResult = this.np.record(u32Samples);
             
+            % Revert UI back to normal after recording done
             this.uiButtonLC400Record.setText(this.cLabelLC400Record);
+            this.uiGetSetLogicalLC400Active.turnOn();
+            this.uiGetSetLogicalLC400Active.enable();
+            this.uiButtonLC400Read.enable();
+            this.uiButtonLC400Write.enable();
+            drawnow;
 
             % Unpack
             
@@ -2907,6 +3023,17 @@ classdef ScannerControl < mic.Base
             
             % Start
             this.np.setTwoWavetablesActive(true);
+            
+        end
+        
+        function onLC400Stop(this, src, evt)
+            
+            % Stop
+            this.np.setTwoWavetablesActive(false);
+            
+            % Disable
+            this.np.setWavetableEnable(uint8(1), false);
+            this.np.setWavetableEnable(uint8(2), false);
             
         end
         
@@ -2970,7 +3097,10 @@ classdef ScannerControl < mic.Base
             
                         
             % Stop scanning
-            this.np.setTwoWavetablesActive(false);
+            % this.np.setTwoWavetablesActive(false);
+            
+            % Programatically click "stop"
+            this.uiGetSetLogicalLC400Active.set(false);
             
             % Disable
             this.np.setWavetableEnable(uint8(1), false);
@@ -2979,6 +3109,9 @@ classdef ScannerControl < mic.Base
             % Write data
             this.np.setWavetable(uint8(1), i32Ch1');
             this.np.setWavetable(uint8(2), i32Ch2');
+            
+            % Programatically click "start"
+            this.uiGetSetLogicalLC400Active.set(true);
             
             %{
             figure
