@@ -33,7 +33,7 @@ classdef ScannerControl < mic.Base
     
     properties (SetAccess = private)
         
-        % {npoint.lc400.LC400 1x1}
+        % {npoint.LC400 1x1}
         np
         
         dThetaX = 0; % deg
@@ -864,13 +864,13 @@ classdef ScannerControl < mic.Base
             % 2017.02.02 
             % This is creating the UI instance, which is also a wrapper
             % around the Java.  For now, I'm going to try and override this
-            % with the new npoint.lc400.LC400 available at 
+            % with the new npoint.LC400 available at 
             % https://github.com/cnanders/matlab-npoint-lc400
             
             % this.np = nPoint(this.cl, this.cDevice);
             
             if this.lUseNPoint
-                this.np = npoint.lc400.LC400('cPort', this.cPortNPoint);
+                this.np = npoint.LC400('cPort', this.cPortNPoint);
                 this.np.init();
                 this.np.connect();
             end
@@ -908,8 +908,8 @@ classdef ScannerControl < mic.Base
             
             this.lConnected = true;
             
-            this.np = npoint.lc400.LC400(...
-                'cConnection', npoint.lc400.LC400.cCONNECTION_TCPIP, ...
+            this.np = npoint.LC400(...
+                'cConnection', npoint.LC400.cCONNECTION_TCPCLIENT, ...
                 'cTcpipHost', this.cLC400TcpipHost, ...
                 'u16TcpipPort', 23 ...
             );
