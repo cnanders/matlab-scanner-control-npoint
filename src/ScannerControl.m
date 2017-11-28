@@ -67,6 +67,7 @@ classdef ScannerControl < mic.Base
         hWaveformRastorPanel
         hWaveformSawPanel
         hWaveformSerpPanel
+        hWaveformQuasarPanel
         hWaveformGeneralPanel
         hSavedWaveformsPanel
         
@@ -159,6 +160,16 @@ classdef ScannerControl < mic.Base
         uiEditSerpOffsetX
         uiEditSerpOffsetY
         uiEditSerpPeriod
+        
+        uiEditQuasarRadiusInner
+        uiEditQuasarRadiusOuter
+        uiEditQuasarNumArcs
+        uiEditQuasarNumPoles
+        uiEditQuasarTheta
+        uiEditQuasarPeriod
+        uiEditQuasarRot
+        uiEditQuasarOffsetX
+        uiEditQuasarOffsetY
         
         uiEditDCx
         uiEditDCy
@@ -387,6 +398,19 @@ classdef ScannerControl < mic.Base
              this.uiEditSerpOffsetX.load(st.uiEditSerpOffsetX);
              this.uiEditSerpOffsetY.load(st.uiEditSerpOffsetY);
              this.uiEditSerpPeriod.load(st.uiEditSerpPeriod);
+             
+             if isfield(st, 'uiEditQuasarRadiusInner')
+                 this.uiEditQuasarRadiusInner.load(st.uiEditQuasarRadiusInner);
+                 this.uiEditQuasarRadiusOuter.load(st.uiEditQuasarRadiusOuter);
+                 this.uiEditQuasarNumArcs.load(st.uiEditQuasarNumArcs);
+                 this.uiEditQuasarNumPoles.load(st.uiEditQuasarNumPoles);
+                 this.uiEditQuasarTheta.load(st.uiEditQuasarTheta);
+                 this.uiEditQuasarRot.load(st.uiEditQuasarRot);
+                 this.uiEditQuasarOffsetX.load(st.uiEditQuasarOffsetX);
+                 this.uiEditQuasarOffsetY.load(st.uiEditQuasarOffsetY);
+                 this.uiEditQuasarPeriod.load(st.uiEditQuasarPeriod);
+             end
+
 
              this.uiEditDCx.load(st.uiEditDCx);
              this.uiEditDCy.load(st.uiEditDCy);
@@ -439,6 +463,16 @@ classdef ScannerControl < mic.Base
             st.uiEditSerpOffsetX = this.uiEditSerpOffsetX.save();
             st.uiEditSerpOffsetY = this.uiEditSerpOffsetY.save();
             st.uiEditSerpPeriod = this.uiEditSerpPeriod.save();
+            
+            st.uiEditQuasarRadiusInner = this.uiEditQuasarRadiusInner.save();
+            st.uiEditQuasarRadiusOuter = this.uiEditQuasarRadiusOuter.save();
+            st.uiEditQuasarNumArcs = this.uiEditQuasarNumArcs.save();
+            st.uiEditQuasarNumPoles = this.uiEditQuasarNumPoles.save();
+            st.uiEditQuasarTheta = this.uiEditQuasarTheta.save();
+            st.uiEditQuasarRot = this.uiEditQuasarRot.save();
+            st.uiEditQuasarOffsetX = this.uiEditQuasarOffsetX.save();
+            st.uiEditQuasarOffsetY = this.uiEditQuasarOffsetY.save();
+            st.uiEditQuasarPeriod = this.uiEditQuasarPeriod.save();
 
             st.uiEditDCx = this.uiEditDCx.save();
             st.uiEditDCy = this.uiEditDCy.save();
@@ -499,6 +533,73 @@ classdef ScannerControl < mic.Base
             addlistener(this.uiButtonRecord, 'eChange', @this.onRecordClick);
             
         end
+        
+        function initWaveformQuasarPanel(this)
+            
+            this.uiEditQuasarRadiusInner = mic.ui.common.Edit(...
+                'cLabel', 'Radius Inner', ...
+                'cType', 'd'); 
+            this.uiEditQuasarRadiusInner.setMin(0);
+            this.uiEditQuasarRadiusInner.setMax(1);
+            this.uiEditQuasarRadiusInner.set(0.5);
+            
+            
+            this.uiEditQuasarRadiusOuter = mic.ui.common.Edit(...
+                'cLabel', 'Radius Outer', ...
+                'cType', 'd'); 
+            this.uiEditQuasarRadiusOuter.setMin(0);
+            this.uiEditQuasarRadiusOuter.setMax(1);
+            this.uiEditQuasarRadiusOuter.set(0.7);
+            
+            this.uiEditQuasarNumArcs = mic.ui.common.Edit(...
+                'cLabel', 'Arcs Per Pole', ...
+                'cType', 'u8'); 
+            this.uiEditQuasarNumArcs.set(uint8(9));
+            this.uiEditQuasarNumArcs.setMin(uint8(3));
+            
+            this.uiEditQuasarNumPoles = mic.ui.common.Edit(...
+                'cLabel', 'Num Poles', ...
+                'cType', 'u8'); 
+            this.uiEditQuasarNumPoles.set(uint8(4));
+            this.uiEditQuasarNumPoles.setMin(uint8(1));
+            
+            
+            this.uiEditQuasarTheta = mic.ui.common.Edit(...
+                'cLabel', 'Pole Angle (deg)', ...
+                'cType', 'd'); 
+            this.uiEditQuasarTheta.setMin(0);
+            this.uiEditQuasarTheta.setMax(360);
+            this.uiEditQuasarTheta.set(30);
+            
+            this.uiEditQuasarPeriod = mic.ui.common.Edit(...
+                'cLabel', 'Period (ms)', ...
+                'cType', 'd'); 
+            this.uiEditQuasarPeriod.setMin(0);
+            this.uiEditQuasarPeriod.set(100);
+            
+            this.uiEditQuasarRot = mic.ui.common.Edit(...
+                'cLabel', 'Rot (deg)', ...
+                'cType', 'd'); 
+            this.uiEditQuasarRot.setMin(-360);
+            this.uiEditQuasarRot.setMax(360);
+            this.uiEditQuasarRot.set(0);
+            
+            this.uiEditQuasarOffsetX = mic.ui.common.Edit(...
+                'cLabel', 'Offset X', ...
+                'cType', 'd'); 
+            this.uiEditQuasarOffsetX.setMin(0);
+            this.uiEditQuasarOffsetX.setMax(1);
+            this.uiEditQuasarOffsetX.set(0);
+            
+            this.uiEditQuasarOffsetY = mic.ui.common.Edit(...
+                'cLabel', 'Offset Y', ...
+                'cType', 'd'); 
+            this.uiEditQuasarOffsetY.setMin(0);
+            this.uiEditQuasarOffsetY.setMax(1);
+            this.uiEditQuasarOffsetY.set(0);
+            
+        end
+        
         
         function initWaveformSerpPanel(this)
             
@@ -732,7 +833,7 @@ classdef ScannerControl < mic.Base
         function initWaveformPanel(this)
             
             this.uipType = mic.ui.common.Popup(...
-                'ceOptions', {'Multipole', 'DC', 'Rastor', 'Saw', 'Serpentine'}, ...
+                'ceOptions', {'Multipole', 'DC', 'Rastor', 'Saw', 'Serpentine', 'Quasar'}, ...
                 'cLabel', 'Select Waveform Type');
             addlistener(this.uipType, 'eChange', @this.onTypeChange);
             
@@ -743,6 +844,7 @@ classdef ScannerControl < mic.Base
             this.initWaveformRastorPanel();
             this.initWaveformSawPanel();
             this.initWaveformSerpPanel();
+            this.initWaveformQuasarPanel();
             
             this.uiButtonPreview = mic.ui.common.Button(...
                 'cText', 'Preview');
@@ -1079,6 +1181,14 @@ classdef ScannerControl < mic.Base
                     else
                         this.buildWaveformSerpPanel();
                     end
+                case uint8(6)
+                    this.hideOtherWaveformPanels(this.hWaveformQuasarPanel);
+                    if ishandle(this.hWaveformQuasarPanel)
+                        set(this.hWaveformQuasarPanel, 'Visible', 'on');
+                    else
+                        this.buildWaveformQuasarPanel();
+                    end
+                    
             end
             
             
@@ -1108,7 +1218,8 @@ classdef ScannerControl < mic.Base
                 this.hWaveformDCPanel, ...
                 this.hWaveformRastorPanel, ...
                 this.hWaveformSawPanel, ...
-                this.hWaveformSerpPanel ...
+                this.hWaveformSerpPanel, ...
+                this.hWaveformQuasarPanel ...
             };
             
             % loop through all panels
@@ -1390,6 +1501,36 @@ classdef ScannerControl < mic.Base
                     this.dVx = st.dX;
                     this.dVy = st.dY;
                     this.dTime = st.dT;
+                    
+                case uint8(6)
+                    % Quasar
+                    
+                    st = quasar(...
+                        'radiusPoleInner', this.uiEditQuasarRadiusInner.get(), ...
+                        'radiusPoleOuter', this.uiEditQuasarRadiusOuter.get(), ...
+                        'numArcs', this.uiEditQuasarNumArcs.get(), ...
+                        'numPoles', this.uiEditQuasarNumPoles.get(), ...
+                        'theta', this.uiEditQuasarTheta.get(), ...
+                        'period', this.uiEditQuasarPeriod.get() / 1000, ...
+                        'dt', this.uiEditTimeStep.get() * 1e-6 ...
+                   );
+               
+                   x = st.x;
+                   y = st.y;
+                   t = st.t;
+                   
+                   % Rotate
+                   [theta, rho] = cart2pol(x, y);
+                   theta = theta + this.uiEditQuasarRot.get() * pi / 180;
+                   [x, y] = pol2cart(theta, rho);
+                   
+                   % Filter
+                   x = ScannerCore.lowpass(x, t, this.uiEditFilterHz.get());
+                   y = ScannerCore.lowpass(y, t, this.uiEditFilterHz.get());
+            
+                   this.dVx = x;
+                   this.dVy = y;
+                   this.dTime = st.t;
                                         
             end
             
@@ -1652,7 +1793,26 @@ classdef ScannerControl < mic.Base
                         this.uiEditSerpPeriod.get(), ...
                         this.uiEditFilterHz.get(), ...
                         this.uiEditTimeStep.get() ...
-                    );  
+                    );
+                case uint8(6)
+                    
+                    % Quasar
+                    cName = [...
+                        'Quasar_', ...
+                        sprintf('rIn%1.0f_', this.uiEditQuasarRadiusInner.get() * 100)...
+                        sprintf('rOut%1.0f_', this.uiEditQuasarRadiusOuter.get() * 100), ...
+                        sprintf('numPoles%1.0f_', this.uiEditQuasarNumPoles.get()), ...
+                        sprintf('numArcs%1.0f_', this.uiEditQuasarNumArcs.get()), ...
+                        sprintf('theta%1.1f_', this.uiEditQuasarTheta.get()), ...
+                        sprintf('rot%1.1f_', this.uiEditQuasarRot.get()), ...
+                        sprintf('offX%1.0f_', this.uiEditQuasarOffsetX.get() * 100), ...
+                        sprintf('offY%1.0f_', this.uiEditQuasarOffsetY.get() * 100), ...
+                        sprintf('period%1.0f_', this.uiEditQuasarPeriod.get()), ...
+                        sprintf('filthz%1.0f_', this.uiEditFilterHz.get()), ...
+                        sprintf('dt%1.0f', this.uiEditTimeStep.get()) ...
+                    ];
+                        
+                            
                      
             end
             
@@ -1803,6 +1963,9 @@ classdef ScannerControl < mic.Base
                 case uint8(5)
                     % Serpentine
                     this.buildWaveformSerpPanel();
+                case uint8(6)
+                    % Quasar
+                    this.buildWaveformQuasarPanel();
             end
 
 
@@ -2027,6 +2190,51 @@ classdef ScannerControl < mic.Base
             this.onSawTimeTypeChange(); % Call handler for multitimetype to make active type visible
 
             drawnow;
+            
+        end
+        
+        function buildWaveformQuasarPanel(this)
+            
+            if ~ishandle(this.hWaveformPanel)
+                return
+            end
+            
+            dLeftCol1 = 10;
+            dLeftCol2 = 100;
+            dEditWidth = 80;
+            dTop = 20;
+            dSep = 40;
+
+            this.hWaveformQuasarPanel = uipanel(...
+                'Parent', this.hWaveformPanel,...
+                'Units', 'pixels',...
+                'Title', 'Quasar Config',...
+                'Clipping', 'on',...
+                'Position', mic.Utils.lt2lb([10 65 190 300], this.hWaveformPanel) ...
+            );
+            drawnow;
+            
+            this.uiEditQuasarRadiusInner.build(this.hWaveformQuasarPanel, dLeftCol1, dTop, dEditWidth, this.dHeightEdit);
+            this.uiEditQuasarRadiusOuter.build(this.hWaveformQuasarPanel, dLeftCol2, dTop, dEditWidth, this.dHeightEdit);            
+
+            dTop = dTop + dSep;
+            
+            this.uiEditQuasarNumPoles.build(this.hWaveformQuasarPanel, dLeftCol2, dTop, dEditWidth, this.dHeightEdit);            
+            this.uiEditQuasarNumArcs.build(this.hWaveformQuasarPanel, dLeftCol1, dTop, dEditWidth, this.dHeightEdit);
+
+            dTop = dTop + dSep;
+            
+            this.uiEditQuasarTheta.build(this.hWaveformQuasarPanel, dLeftCol1, dTop, dEditWidth, this.dHeightEdit);
+            this.uiEditQuasarRot.build(this.hWaveformQuasarPanel, dLeftCol2, dTop, dEditWidth, this.dHeightEdit);            
+
+            dTop = dTop + dSep;
+            
+            this.uiEditQuasarOffsetX.build(this.hWaveformQuasarPanel, dLeftCol1, dTop, dEditWidth, this.dHeightEdit);
+            this.uiEditQuasarOffsetY.build(this.hWaveformQuasarPanel, dLeftCol2, dTop, dEditWidth, this.dHeightEdit);            
+
+            dTop = dTop + dSep;
+            
+            this.uiEditQuasarPeriod.build(this.hWaveformQuasarPanel, dLeftCol1, dTop, dEditWidth, this.dHeightEdit);
             
         end
         

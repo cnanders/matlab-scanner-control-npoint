@@ -4,20 +4,18 @@ MATLAB UI for generating waveforms suitable for use in active illumination syste
 
 # Installation
 
-1. Clone this repo and the repos of all [dependencies](#dependencies) into your MATLAB project, preferably in a “vendor” directory.  See [Recommended Project Structure](#project-structure)
-
-2. Add this library and all dependencies to the MATLAB path, e.g., 
-
+1. Clone this git repo into your MATLAB project, 
+2. Clone the git repos of all [dependencies](#dependencies) into your project, preferably in a “vendor” directory.  If any dependencies have dependencies, be sure to bring those in too.  See [Recommended MATLAB App Structure](https://github.com/cnanders/matlab-app-structure)
+3. Add the src code of this library and all dependencies to the MATLAB path, e.g., 
 ```matlab
-addpath(genpath('vendor/github/cnanders/matlab-scanner-control-npoint'));
-addpath(genpath('vendor/github/cnanders/mic'));
-addpath(genpath('vendor/github/cnanders/matlab-npoint-lc400/pkg'));
-addpath(genpath('vendor/github/cnanders/matlab-ieee/pkg'));
-addpath(genpath('vendor/github/cnanders/matlab-hex/pkg'));
-
+addpath(genpath('vendor/github/cnanders/matlab-scanner-control-npoint/src'));
+addpath(genpath('vendor/github/cnanders/matlab-instrument-control/src'));
+addpath(genpath('vendor/github/cnanders/matlab-npoint-lc400/src'));
+addpath(genpath('vendor/github/cnanders/matlab-ieee/src'));
+addpath(genpath('vendor/github/cnanders/matlab-hex/src'));
 ```
-3. Make sure the nPoint LC400 is recognized.  See [github/cnanders/matlab-npoint-lc400](https://github.com/cnanders/matlab-npoint-lc400)
-3. Instantiate a `ScannerControl` and call its `build()` method
+4. Make sure the nPoint LC400 is recognized.  See [github/cnanders/matlab-npoint-lc400](https://github.com/cnanders/matlab-npoint-lc400)
+5. Instantiate a `ScannerControl` and call its `build()` method
 
 ```matlab
 sc = ScannerControl();
@@ -27,22 +25,7 @@ sc.build();
 <a name="dependencies"></a>
 ## Dependencies
 
-- [github/cnanders/matlab-instrument-control](https://github.com/cnanders/matlab-instrument-control) (for the UI) (v1.1.0)
-- ~~[github/cnanders/mic](https://github.com/cnanders/mic) (for the UI) (v1.0.0)~~
-- [github/cnanders/matlab-npoint-lc400](https://github.com/cnanders/matlab-npoint-lc400) (for MATLAB communication with nPoint LC.400 controller)
+- [https://github.com/cnanders/matlab-quasar](https://github.com/cnanders/matlab-quasar)
+- [https://github.com/cnanders/matlab-instrument-control](https://github.com/cnanders/matlab-instrument-control) for the UI (v1.1.0)
+- [https://github.com/cnanders/matlab-npoint-lc400](https://github.com/cnanders/matlab-npoint-lc400) for MATLAB communication with nPoint LC.400 controller
 
-<a name="project-structure"></a>
-# Recommended Project Structure
-
-- project
-	- vendor
-		- github
-			- cnanders
-                - matlab-scanner-control-npoint **(this repo)**
-                - ~~mic **(direct dependency)**~~
-                - matlab-instrument-control **(dependency)**
-                - matlab-npoint-lc400 **(dependency)**	
-				- matlab-ieee **(dependency of matlab-npoint-lc400)**
-				- matlab-hex **(dependency of matlab-ieee)**
-	- file1.m
-	- file2.m
